@@ -15,11 +15,10 @@ import android.support.v7.app.AlertDialog
 import android.widget.Button
 import butterknife.BindView
 import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.PermissionListener
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import kotlinx.android.synthetic.main.activity_make_photo.*
 import java.io.File
 
@@ -39,39 +38,39 @@ class MakePhotoActivity : AppCompatActivity() {
     }
 
     private fun validatePermission() {
-        Dexter.withActivity(this).withPermission(Manifest.permission.CAMERA)
-                .withListener(object: PermissionListener {
 
-                    override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                        launchCamera()
-                    }
+        Dexter.withActivity(this).withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA).withListener(object : MultiplePermissionsListener {
 
-                    override fun onPermissionRationaleShouldBeShown(permission: PermissionRequest?, token: PermissionToken?) {
-                        AlertDialog.Builder(this@MakePhotoActivity)
-                                .setTitle(R.string.storage_permission_rationale_title)
-                                .setMessage(R.string.storage_permition_rationale_message)
-                                .setNegativeButton(android.R.string.cancel,
-                                        { dialog, _ ->
-                                            dialog.dismiss()
-                                            token?.cancelPermissionRequest()
-                                        })
-                                .setPositiveButton(android.R.string.ok,
-                                        { dialog, _ ->
-                                            dialog.dismiss()
-                                            token?.continuePermissionRequest()
-                                        })
-                                .setOnDismissListener({ token?.cancelPermissionRequest() })
-                                .show()
-                    }
+            override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                if (report.areAllPermissionsGranted()) {
+                    launchCamera()
+                } else {
+                    Snackbar.make(mainContainer!!,
+                            R.string.storage_permission_denied_message,
+                            Snackbar.LENGTH_LONG)
+                            .show()
+                }
+            }
 
-                    override fun onPermissionDenied(response: PermissionDeniedResponse?) {
-                        Snackbar.make(mainContainer!!,
-                                R.string.storage_permission_denied_message,
-                                Snackbar.LENGTH_LONG)
-                                .show()
-                    }
+            override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
+                AlertDialog.Builder(this@MakePhotoActivity)
+                        .setTitle(R.string.storage_permission_rationale_title)
+                        .setMessage(R.string.storage_permition_rationale_message)
+                        .setNegativeButton(android.R.string.cancel,
+                                { dialog, _ ->
+                                    dialog.dismiss()
+                                    token?.cancelPermissionRequest()
+                                })
+                        .setPositiveButton(android.R.string.ok,
+                                { dialog, _ ->
+                                    dialog.dismiss()
+                                    token?.continuePermissionRequest()
+                                })
+                        .setOnDismissListener({ token?.cancelPermissionRequest() })
+                        .show()
+            }
 
-                }).check()
+        }).check()
     }
 
     private fun launchCamera() {
