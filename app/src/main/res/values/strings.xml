@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">GeoPhotoApp</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="storage_permission_rationale_title">Pozwolenie</string>
+    <string name="storage_permition_rationale_message">Czy pozwolić na zapis?</string>
+    <string name="storage_permission_denied_message">Nie masz zezwolenia na zapisywanie</string>
 </resources>
