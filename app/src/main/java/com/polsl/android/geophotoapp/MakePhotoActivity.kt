@@ -5,6 +5,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
+import android.location.Location
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -12,18 +13,20 @@ import android.provider.MediaStore
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
-import android.widget.Button
+import android.view.View
 import butterknife.BindView
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.polsl.android.geophotoapp.Services.LocationProvider
+import com.polsl.android.geophotoapp.Services.LocationProviderDelegate
 import kotlinx.android.synthetic.main.activity_make_photo.*
 import java.io.File
 
 
-class MakePhotoActivity : AppCompatActivity() {
+class MakePhotoActivity : AppCompatActivity(), LocationProviderDelegate {
 
     @BindView(R.id.cameraMainContainer)
     var mainContainer: ConstraintLayout? = null
@@ -34,7 +37,8 @@ class MakePhotoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_make_photo)
-        capturePhotoButton.setOnClickListener { validatePermission() }
+        cameraPreview.setOnClickListener { validatePermission() }
+        locationButton.visibility = View.INVISIBLE
     }
 
     private fun validatePermission() {
@@ -107,5 +111,71 @@ class MakePhotoActivity : AppCompatActivity() {
         val file = File(photoPath)
         val uri = Uri.fromFile(file)
         cameraPreview.setImageURI(uri)
+        changePreviewParams()
+        setupLocationButton()
     }
+
+    private fun changePreviewParams() {
+        cameraPreview.layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+        )
+        cameraPreview.setOnClickListener(null)
+    }
+
+    private fun setupLocationButton() {
+        locationButton.visibility = View.VISIBLE
+        locationButton.setOnClickListener { locationButtonAction() }
+    }
+
+    private fun provideLocation() {
+        var locationReader = LocationProvider(context = this)
+        locationReader.delegate = this
+        locationReader.provideLocation()
+    }
+
+    private fun locationButtonAction() {
+        Dexter.withActivity(this)
+                .withPermissions(Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.ACCESS_FINE_LOCATION)
+                .withListener(object: MultiplePermissionsListener {
+
+            override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                if (report.areAllPermissionsGranted()) {
+                    provideLocation()
+                } else {
+                    Snackbar.make(mainContainer!!,
+                            R.string.storage_permission_denied_message,
+                            Snackbar.LENGTH_LONG)
+                            .show()
+                }
+            }
+
+            override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
+                AlertDialog.Builder(this@MakePhotoActivity)
+                        .setTitle(R.string.storage_permission_rationale_title)
+                        .setMessage(R.string.storage_permition_rationale_message)
+                        .setNegativeButton(android.R.string.cancel,
+                                { dialog, _ ->
+                                    dialog.dismiss()
+                                    token?.cancelPermissionRequest()
+                                })
+                        .setPositiveButton(android.R.string.ok,
+                                { dialog, _ ->
+                                    dialog.dismiss()
+                                    token?.continuePermissionRequest()
+                                })
+                        .setOnDismissListener({ token?.cancelPermissionRequest() })
+                        .show()
+            }
+
+
+        }).check()
+    }
+
+    override fun locationReaded(currentLocation: Location) {
+        print(currentLocation)
+        //TODO: zapisanie tej otrzymanej lokalizacji do exifu zdjęcia
+    }
+
 }
