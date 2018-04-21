@@ -3,7 +3,9 @@ package com.polsl.android.geophotoapp
 
 import android.Manifest
 import android.app.Activity
+import android.support.v4.app.Fragment
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.net.Uri
@@ -13,7 +15,9 @@ import android.provider.MediaStore
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import butterknife.BindView
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -23,10 +27,11 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.polsl.android.geophotoapp.Services.LocationProvider
 import com.polsl.android.geophotoapp.Services.LocationProviderDelegate
 import kotlinx.android.synthetic.main.activity_make_photo.*
+import kotlinx.android.synthetic.main.fragment_tabbed.view.*
 import java.io.File
 
 
-class MakePhotoActivity : AppCompatActivity(), LocationProviderDelegate {
+class MakePhotoActivity : Fragment(), LocationProviderDelegate {
 
     @BindView(R.id.cameraMainContainer)
     var mainContainer: ConstraintLayout? = null
@@ -34,16 +39,21 @@ class MakePhotoActivity : AppCompatActivity(), LocationProviderDelegate {
     private val TAKE_PHOTO_REQUEST = 101
     private var mCurrentPhotoPath: String = ""
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_make_photo)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val rootView = inflater.inflate(R.layout.activity_make_photo, container, false)
+
+        return rootView
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         cameraPreview.setOnClickListener { validatePermission() }
         locationButton.visibility = View.INVISIBLE
     }
 
     private fun validatePermission() {
 
-        Dexter.withActivity(this).withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA).withListener(object : MultiplePermissionsListener {
+        Dexter.withActivity(this.activity).withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA).withListener(object : MultiplePermissionsListener {
 
             override fun onPermissionsChecked(report: MultiplePermissionsReport) {
                 if (report.areAllPermissionsGranted()) {
@@ -57,7 +67,7 @@ class MakePhotoActivity : AppCompatActivity(), LocationProviderDelegate {
             }
 
             override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
-                AlertDialog.Builder(this@MakePhotoActivity)
+                AlertDialog.Builder(this@MakePhotoActivity.getContext())
                         .setTitle(R.string.storage_permission_rationale_title)
                         .setMessage(R.string.storage_permition_rationale_message)
                         .setNegativeButton(android.R.string.cancel,
@@ -80,11 +90,11 @@ class MakePhotoActivity : AppCompatActivity(), LocationProviderDelegate {
     private fun launchCamera() {
         val values = ContentValues(1)
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg")
-        val fileUri = contentResolver
+        val fileUri = this.activity.contentResolver
                 .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         values)
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if(intent.resolveActivity(packageManager) != null) {
+        if(intent.resolveActivity(this.activity.packageManager) != null) {
             mCurrentPhotoPath = fileUri.toString()
             intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -102,7 +112,7 @@ class MakePhotoActivity : AppCompatActivity(), LocationProviderDelegate {
     }
 
     private fun processCapturedPhoto() {
-        val cursor = contentResolver.query(Uri.parse(mCurrentPhotoPath),
+        val cursor = this.activity.contentResolver.query(Uri.parse(mCurrentPhotoPath),
                 Array(1) {android.provider.MediaStore.Images.ImageColumns.DATA},
                 null, null, null)
         cursor.moveToFirst()
@@ -129,13 +139,13 @@ class MakePhotoActivity : AppCompatActivity(), LocationProviderDelegate {
     }
 
     private fun provideLocation() {
-        var locationReader = LocationProvider(context = this)
+        var locationReader = LocationProvider(context = this.context)
         locationReader.delegate = this
         locationReader.provideLocation()
     }
 
     private fun locationButtonAction() {
-        Dexter.withActivity(this)
+        Dexter.withActivity(this.activity)
                 .withPermissions(Manifest.permission.ACCESS_COARSE_LOCATION,
                                 Manifest.permission.ACCESS_FINE_LOCATION)
                 .withListener(object: MultiplePermissionsListener {
@@ -152,7 +162,7 @@ class MakePhotoActivity : AppCompatActivity(), LocationProviderDelegate {
             }
 
             override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
-                AlertDialog.Builder(this@MakePhotoActivity)
+                AlertDialog.Builder(this@MakePhotoActivity.context)
                         .setTitle(R.string.storage_permission_rationale_title)
                         .setMessage(R.string.storage_permition_rationale_message)
                         .setNegativeButton(android.R.string.cancel,
