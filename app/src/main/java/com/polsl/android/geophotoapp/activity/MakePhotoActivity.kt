@@ -1,15 +1,13 @@
-package com.polsl.android.geophotoapp
+package com.polsl.android.geophotoapp.activity
 
 
 import android.Manifest
 import android.app.Activity
 import android.support.v4.app.Fragment
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.constraint.ConstraintLayout
@@ -24,10 +22,10 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.Services.LocationProvider
 import com.polsl.android.geophotoapp.Services.LocationProviderDelegate
 import kotlinx.android.synthetic.main.activity_make_photo.*
-import kotlinx.android.synthetic.main.fragment_tabbed.view.*
 import java.io.File
 
 
