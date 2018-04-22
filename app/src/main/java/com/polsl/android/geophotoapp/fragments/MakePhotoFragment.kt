@@ -1,9 +1,8 @@
-package com.polsl.android.geophotoapp.activity
+package com.polsl.android.geophotoapp.fragments
 
 
 import android.Manifest
 import android.app.Activity
-import android.support.v4.app.Fragment
 import android.content.ContentValues
 import android.content.Intent
 import android.location.Location
@@ -12,6 +11,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
@@ -25,11 +25,11 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.Services.LocationProvider
 import com.polsl.android.geophotoapp.Services.LocationProviderDelegate
-import kotlinx.android.synthetic.main.activity_make_photo.*
+import kotlinx.android.synthetic.main.fragment_make_photo.*
 import java.io.File
 
 
-class MakePhotoActivity : Fragment(), LocationProviderDelegate {
+class MakePhotoFragment : Fragment(), LocationProviderDelegate {
 
     @BindView(R.id.cameraMainContainer)
     var mainContainer: ConstraintLayout? = null
@@ -38,7 +38,7 @@ class MakePhotoActivity : Fragment(), LocationProviderDelegate {
     private var mCurrentPhotoPath: String = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.activity_make_photo, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_make_photo, container, false)
 
         return rootView
     }
@@ -65,7 +65,7 @@ class MakePhotoActivity : Fragment(), LocationProviderDelegate {
             }
 
             override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
-                AlertDialog.Builder(this@MakePhotoActivity.getContext())
+                AlertDialog.Builder(this@MakePhotoFragment.getContext())
                         .setTitle(R.string.storage_permission_rationale_title)
                         .setMessage(R.string.storage_permition_rationale_message)
                         .setNegativeButton(android.R.string.cancel,
@@ -160,7 +160,7 @@ class MakePhotoActivity : Fragment(), LocationProviderDelegate {
             }
 
             override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
-                AlertDialog.Builder(this@MakePhotoActivity.context)
+                AlertDialog.Builder(this@MakePhotoFragment.context)
                         .setTitle(R.string.storage_permission_rationale_title)
                         .setMessage(R.string.storage_permition_rationale_message)
                         .setNegativeButton(android.R.string.cancel,
