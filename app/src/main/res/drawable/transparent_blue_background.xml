@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+            android:dither="true"
+            android:shape="rectangle">
+            <corners android:radius="@dimen/round_button_radius" />
+            <solid android:color="@color/transparentBlue" />
+        </shape>
+    </item>
+</layer-list>

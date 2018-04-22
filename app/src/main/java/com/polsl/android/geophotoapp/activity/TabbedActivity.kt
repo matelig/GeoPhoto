@@ -5,15 +5,15 @@ import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.fragments.MakePhotoFragment
 import com.polsl.android.geophotoapp.fragments.MapFragment
+import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
 import kotlinx.android.synthetic.main.activity_tabbed.*
 
-class TabbedActivity : AppCompatActivity() {
+class TabbedActivity : BaseActivity() {
 
     /**
      * The [android.support.v4.view.PagerAdapter] that will provide
@@ -59,14 +59,26 @@ class TabbedActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
-
-        if (id == R.id.action_settings) {
-            return true
+        when (id) {
+            R.id.action_settings -> return true
+            R.id.action_logout -> {
+                return onLogoutClicked()
+            }
         }
-
         return super.onOptionsItemSelected(item)
     }
 
+    private fun onLogoutClicked(): Boolean {
+        logout()
+        displayToast(R.string.logout)
+        startActivity(LoginActivity::class.java)
+        finish()
+        return true
+    }
+
+    private fun logout() {
+        UserDataSharedPrefsHelper(this).saveLoggedUser(null)
+    }
 
     /**
      * A [FragmentPagerAdapter] that returns a fragment corresponding to
