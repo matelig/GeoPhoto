@@ -1,7 +1,9 @@
-package com.polsl.android.geophotoapp;
+package com.polsl.android.geophotoapp.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.polsl.android.geophotoapp.R;
 
 public class LoginActivity extends AppCompatActivity {
 
