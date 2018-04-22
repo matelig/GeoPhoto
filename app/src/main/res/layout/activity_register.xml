@@ -1,19 +1,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/parentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:gravity="center"
+    android:id="@+id/parentLayout"
     android:orientation="vertical"
-    tools:context="com.polsl.android.geophotoapp.activity.LoginActivity">
+    tools:context="com.polsl.android.geophotoapp.activity.RegisterActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|top"
         android:layout_marginBottom="@dimen/margin_normal"
-        android:text="@string/login_welcome"
+        android:text="@string/register_title"
         android:textColor="@color/colorPrimary"
         android:textSize="30sp" />
 
@@ -22,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|top"
         android:layout_marginBottom="@dimen/margin_normal"
-        android:text="@string/login_please_login"
+        android:text="@string/register_create_account"
         android:textColor="@color/colorPrimary"
         android:textSize="24sp" />
 
@@ -38,15 +37,22 @@
         android:hint="@string/login_password"
         android:inputType="textPassword" />
 
-    <com.rey.material.widget.Button
-        android:id="@+id/loginButton"
-        style="@style/BlueRoundButton"
+    <EditText
+        android:id="@+id/confirmPasswordEditText"
+        style="@style/EditText"
         android:layout_marginTop="@dimen/margin_normal"
-        android:text="@string/login_button" />
+        android:hint="@string/login_password_confirm"
+        android:inputType="textPassword" />
 
     <com.rey.material.widget.Button
         android:id="@+id/registerButton"
-        style="@style/TransparentRoundButton"
+        style="@style/BlueRoundButton"
         android:layout_marginTop="@dimen/margin_normal"
         android:text="@string/register_button" />
+
+    <com.rey.material.widget.Button
+        android:id="@+id/loginButton"
+        style="@style/TransparentRoundButton"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:text="@string/login_button" />
 </LinearLayout>
