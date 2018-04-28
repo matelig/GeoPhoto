@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentPagerAdapter
 import android.view.Menu
 import android.view.MenuItem
 import com.polsl.android.geophotoapp.R
+import com.polsl.android.geophotoapp.fragments.GalleryPhotosFragment
 import com.polsl.android.geophotoapp.fragments.MakePhotoFragment
 import com.polsl.android.geophotoapp.fragments.MapFragment
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
@@ -30,7 +31,7 @@ class TabbedActivity : BaseActivity() {
 
         setSupportActionBar(toolbar)
 
-        val tabsAdapter = SectionsPagerAdapter(supportFragmentManager, 2)
+        val tabsAdapter = SectionsPagerAdapter(supportFragmentManager, 3)
 
         container.adapter = tabsAdapter
         container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
@@ -86,7 +87,7 @@ class TabbedActivity : BaseActivity() {
      */
     inner class SectionsPagerAdapter(fm: FragmentManager, private val numberOfTabs: Int) : FragmentPagerAdapter(fm) {
 
-        private val tabTitles = arrayOf("Make photo", "Map")
+        private val tabTitles = arrayOf("Make photo", "Map", "Gallery photos")
 
         override fun getPageTitle(position: Int): CharSequence {
             return tabTitles[position]
@@ -96,6 +97,7 @@ class TabbedActivity : BaseActivity() {
             return when (position) {
                 0 -> MakePhotoFragment()
                 1 -> MapFragment.newInstance(0.0,0.0)
+                2 -> GalleryPhotosFragment.newInstance()
                 else -> MakePhotoFragment()
             }
         }
