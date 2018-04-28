@@ -87,7 +87,7 @@ class TabbedActivity : BaseActivity() {
      */
     inner class SectionsPagerAdapter(fm: FragmentManager, private val numberOfTabs: Int) : FragmentPagerAdapter(fm) {
 
-        private val tabTitles = arrayOf("Make photo", "Map", "Gallery photos")
+        private val tabTitles = arrayOf("Make photo", "Map", "Device photos")
 
         override fun getPageTitle(position: Int): CharSequence {
             return tabTitles[position]
