@@ -6,14 +6,17 @@ import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.adapter.ImageRvAdapter
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_photo_list.*
 
 /**
  * Created by alachman on 29.04.2018.
  */
 class PhotoListFragment : Fragment() {
+
 //todo message when there is no internet
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_photo_list, container, false)
@@ -26,17 +29,20 @@ class PhotoListFragment : Fragment() {
     }
 
     private lateinit var photos: List<String>
+    var adapter: ImageRvAdapter? = null
+    private var subscribe: Disposable? = null
 
     private fun getPhotos() {
         //todo get photos list from server
         photos = getPhotosList()
         preparePhotosAdapter()
+        setupItemClick()
     }
 
     private fun preparePhotosAdapter() {
-        val adapter = ImageRvAdapter(activity)
+        adapter = ImageRvAdapter(activity)
         photosRv.layoutManager = GridLayoutManager(activity, 4)
-        adapter.items = photos as ArrayList<Any>
+        adapter?.items = photos as ArrayList<Any>
         photosRv.adapter = adapter
     }
 
@@ -45,5 +51,17 @@ class PhotoListFragment : Fragment() {
         for (i in 0..200)
             photos.add("https://picsum.photos/200/?image=" + i)
         return photos
+    }
+
+    private fun setupItemClick() {
+        subscribe = adapter?.getItemClickObservable()
+                ?.subscribe({
+                    Toast.makeText(this.context, "Clicked on $it", Toast.LENGTH_LONG).show()
+                })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        subscribe?.dispose()
     }
 }
