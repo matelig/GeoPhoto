@@ -8,7 +8,7 @@ import android.widget.ImageView
 import com.squareup.picasso.Picasso
 import java.io.File
 
-class ImageAdapter(private val context: Context, private val number: Int, private val uris: List<String>) : BaseAdapter() {
+class ImageAdapter(private val context: Context,private val uris: List<String>) : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val imageView: ImageView
@@ -31,5 +31,5 @@ class ImageAdapter(private val context: Context, private val number: Int, privat
 
     override fun getItemId(position: Int): Long = position.toLong()
 
-    override fun getCount(): Int = number
+    override fun getCount(): Int = uris.size
 }

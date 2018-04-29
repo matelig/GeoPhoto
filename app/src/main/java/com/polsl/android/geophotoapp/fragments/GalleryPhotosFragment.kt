@@ -60,7 +60,7 @@ class GalleryPhotosFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val imagePaths = getImagePaths(context)
-        photosGrid.adapter = ImageAdapter(context, imagePaths.size, imagePaths)
+        photosGrid.adapter = ImageAdapter(context, imagePaths)
         photosGrid.onItemClickListener =
                 AdapterView.OnItemClickListener { _, v, position, _ ->
                     Toast.makeText(context, imagePaths[position], Toast.LENGTH_SHORT).show()
