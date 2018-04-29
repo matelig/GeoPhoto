@@ -11,6 +11,7 @@ import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.fragments.GalleryPhotosFragment
 import com.polsl.android.geophotoapp.fragments.MakePhotoFragment
 import com.polsl.android.geophotoapp.fragments.MapFragment
+import com.polsl.android.geophotoapp.fragments.PhotoListFragment
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
 import kotlinx.android.synthetic.main.activity_tabbed.*
 
@@ -31,11 +32,11 @@ class TabbedActivity : BaseActivity() {
 
         setSupportActionBar(toolbar)
 
-        val tabsAdapter = SectionsPagerAdapter(supportFragmentManager, 3)
+        val tabsAdapter = SectionsPagerAdapter(supportFragmentManager, 4)
 
         container.adapter = tabsAdapter
         container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
-        container.pageMargin = 3
+        container.pageMargin = 4
         tabs.setupWithViewPager(container)
         tabs.tabMode = TabLayout.MODE_FIXED
         tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -87,7 +88,7 @@ class TabbedActivity : BaseActivity() {
      */
     inner class SectionsPagerAdapter(fm: FragmentManager, private val numberOfTabs: Int) : FragmentPagerAdapter(fm) {
 
-        private val tabTitles = arrayOf("Make photo", "Map", "Device photos")
+        private val tabTitles = arrayOf("Photos","Make photo", "Map", "Device photos")
 
         override fun getPageTitle(position: Int): CharSequence {
             return tabTitles[position]
@@ -95,9 +96,10 @@ class TabbedActivity : BaseActivity() {
 
         override fun getItem(position: Int): Fragment {
             return when (position) {
-                0 -> MakePhotoFragment()
-                1 -> MapFragment.newInstance(0.0,0.0)
-                2 -> GalleryPhotosFragment.newInstance()
+                0 -> PhotoListFragment()
+                1 -> MakePhotoFragment()
+                2 -> MapFragment.newInstance(0.0,0.0)
+                3 -> GalleryPhotosFragment.newInstance()
                 else -> MakePhotoFragment()
             }
         }
