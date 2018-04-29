@@ -2,6 +2,7 @@ package com.polsl.android.geophotoapp.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import android.widget.Toast
 import com.polsl.android.geophotoapp.viewholder.BaseViewHolder
 import io.reactivex.subjects.PublishSubject
 
