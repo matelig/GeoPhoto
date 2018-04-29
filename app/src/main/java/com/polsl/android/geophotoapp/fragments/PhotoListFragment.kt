@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.adapter.ImageRvAdapter
+import com.polsl.android.geophotoapp.model.Photo
+import com.polsl.android.geophotoapp.model.SelectablePhotoModel
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_photo_list.*
 
@@ -26,6 +28,16 @@ class PhotoListFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getPhotos()
+        prepareDownloadButton()
+    }
+
+    private fun prepareDownloadButton() {
+
+        downloadPhotosButton.setOnClickListener(View.OnClickListener {
+            //todo
+//            downloadPhotos()
+            Toast.makeText(activity, "Photos downloaded", Toast.LENGTH_SHORT).show()
+        })
     }
 
     private lateinit var photos: List<String>
@@ -42,8 +54,22 @@ class PhotoListFragment : Fragment() {
     private fun preparePhotosAdapter() {
         adapter = ImageRvAdapter(activity)
         photosRv.layoutManager = GridLayoutManager(activity, 4)
-        adapter?.items = photos as ArrayList<Any>
+        adapter!!.items = getSelectablePhotos() as ArrayList<Any>
+        adapter!!.selectedItemsObservable.subscribe({ t ->
+            if (t > 0) {
+                selectedPhotoLayout.visibility = View.VISIBLE
+                selectedPhotosTv.text = getString(R.string.selected_photos, t)
+            } else
+                selectedPhotoLayout.visibility = View.GONE
+        })
         photosRv.adapter = adapter
+    }
+
+    private fun getSelectablePhotos(): ArrayList<SelectablePhotoModel>? {
+        var selectablePhotos = ArrayList<SelectablePhotoModel>()
+        for (photo in photos)
+            selectablePhotos.add(SelectablePhotoModel(Photo(photo), false))
+        return selectablePhotos
     }
 
     private fun getPhotosList(): List<String> {
