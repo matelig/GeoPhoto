@@ -54,8 +54,8 @@ class PhotoListFragment : Fragment() {
     private fun preparePhotosAdapter() {
         adapter = ImageRvAdapter(activity)
         photosRv.layoutManager = GridLayoutManager(activity, 4)
-        adapter.items = getSelectablePhotos() as ArrayList<Any>
-        adapter.selectedItemsObservable.subscribe({ t ->
+        adapter!!.items = getSelectablePhotos() as ArrayList<Any>
+        adapter!!.selectedItemsObservable.subscribe({ t ->
             if (t > 0) {
                 selectedPhotoLayout.visibility = View.VISIBLE
                 selectedPhotosTv.text = getString(R.string.selected_photos, t)

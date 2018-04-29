@@ -25,7 +25,7 @@ class ImageRvAdapter(private val context: Context) : BaseRvAdapter() {
 
     override fun onBindHolder(holder: BaseViewHolder?, item: Any?) {
 
-        Picasso.get().load((item as SelectablePhotoModel).photo.url)
+        Picasso.get().load((item as SelectablePhotoModel).photo.thumbnailUrl)
                 .placeholder(R.drawable.no_photo)
                 .resize(context.resources.getDimension(R.dimen.photo_thumbnail_size).toInt(),
                         context.resources.getDimension(R.dimen.photo_thumbnail_size).toInt())
