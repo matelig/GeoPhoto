@@ -128,6 +128,8 @@ class MakePhotoFragment : Fragment(), LocationProviderDelegate {
                 ConstraintLayout.LayoutParams.MATCH_PARENT,
                 ConstraintLayout.LayoutParams.MATCH_PARENT
         )
+        cameraPreview.isZoomable = true
+
         cameraPreview.setOnClickListener(null)
     }
 

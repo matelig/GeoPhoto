@@ -8,14 +8,14 @@
     android:orientation="vertical"
     tools:context=".fragments.MakePhotoFragment">
 
-    <com.polsl.android.geophotoapp.customUI.TouchImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.github.chrisbanes.photoview.PhotoView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/cameraPreview"
         android:layout_margin="60dp"
         android:src="@drawable/click_here"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.polsl.android.geophotoapp.customUI.TouchImageView>
+    </com.github.chrisbanes.photoview.PhotoView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/locationButton"
