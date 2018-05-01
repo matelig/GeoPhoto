@@ -33,7 +33,7 @@ class ImageRvAdapter(private val context: Context) : BaseRvAdapter() {
                 .into((holder as PhotoViewHolder).photoIv)
         holder.photoCb?.isChecked = item.isSelected
         holder.photoCb?.setOnClickListener({
-            holder.photoCb?.isChecked = !item.isSelected
+            holder.photoCb.isChecked = !item.isSelected
             item.isSelected = !item.isSelected
             updateSelectedItemsObservable()
         }

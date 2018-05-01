@@ -65,7 +65,7 @@ class MakePhotoFragment : Fragment(), LocationProviderDelegate {
             }
 
             override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
-                AlertDialog.Builder(this@MakePhotoFragment.getContext())
+                AlertDialog.Builder(this@MakePhotoFragment.context)
                         .setTitle(R.string.storage_permission_rationale_title)
                         .setMessage(R.string.storage_permition_rationale_message)
                         .setNegativeButton(android.R.string.cancel,
