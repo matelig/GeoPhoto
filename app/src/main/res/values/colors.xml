@@ -6,4 +6,5 @@
     <color name="buttonLocation">#e4d8da</color>
     <color name="buttonLocationTint">#2d960e</color>
     <color name="transparentBlue">#993F51B5</color>
+    <color name="dialogGray">#7e7a79</color>
 </resources>

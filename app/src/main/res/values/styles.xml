@@ -37,4 +37,8 @@
     <style name="TransparentRoundButton" parent="BlueRoundButton">
         <item name="android:background">@drawable/transparent_blue_background</item>
     </style>
+
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
 </resources>

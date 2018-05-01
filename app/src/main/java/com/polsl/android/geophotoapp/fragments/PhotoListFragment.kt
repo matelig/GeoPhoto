@@ -1,5 +1,6 @@
 package com.polsl.android.geophotoapp.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.polsl.android.geophotoapp.R
+import com.polsl.android.geophotoapp.activity.EditExifActivity
 import com.polsl.android.geophotoapp.adapter.ImageRvAdapter
 import com.polsl.android.geophotoapp.model.Photo
 import com.polsl.android.geophotoapp.model.SelectablePhotoModel
@@ -82,8 +84,17 @@ class PhotoListFragment : Fragment() {
     private fun setupItemClick() {
         subscribe = adapter?.getItemClickObservable()
                 ?.subscribe({
-                    Toast.makeText(this.context, "Clicked on $it", Toast.LENGTH_LONG).show()
+                    var photoModel = it as? SelectablePhotoModel
+                    photoModel?.photo?.let {
+                        Toast.makeText(this.context, "Clicked on ${it.url}", Toast.LENGTH_LONG).show()
+                        showEditExifActivity("id")
+                    }
                 })
+    }
+
+    private fun showEditExifActivity(photoId: String) {
+        val intent = Intent(this.context, EditExifActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onDestroy() {
