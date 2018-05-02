@@ -44,7 +44,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.EditExifActivity"></activity>
+        <activity android:name=".activity.EditExifActivity" />
+        <activity android:name=".activity.TakenPhotoActivity"></activity>
     </application>
 
 </manifest>
