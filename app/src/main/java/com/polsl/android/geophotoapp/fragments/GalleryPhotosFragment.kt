@@ -3,6 +3,7 @@ package com.polsl.android.geophotoapp.fragments
 import android.content.Context
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.media.ExifInterface
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -64,6 +65,11 @@ class GalleryPhotosFragment : Fragment() {
         photosGrid.onItemClickListener =
                 AdapterView.OnItemClickListener { _, v, position, _ ->
                     Toast.makeText(context, imagePaths[position], Toast.LENGTH_SHORT).show()
+
+                    var imageExif = ExifInterface(imagePaths[position])
+                    var location = imageExif.latLong
+                    print("mesedz")
+                    Toast.makeText(context, "Latitude $location[0], longitude $location[1]", Toast.LENGTH_SHORT).show()
                 }
     }
 
