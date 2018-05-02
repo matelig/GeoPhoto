@@ -6,6 +6,7 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.media.ExifInterface
 import android.support.v7.app.AlertDialog
 import android.view.View
 import com.karumi.dexter.Dexter
@@ -21,12 +22,13 @@ import java.io.File
 
 class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate {
 
+    var photoUri: String? = null
     var photoPath: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_taken_photo)
-        photoPath = intent.getStringExtra("photoUrl")
+        photoUri = intent.getStringExtra("photoUrl")
         setupButtonsAction()
         processCapturedPhoto()
     }
@@ -47,11 +49,11 @@ class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate {
     }
 
     private fun processCapturedPhoto() {
-        val cursor = this.contentResolver.query(Uri.parse(this.photoPath),
+        val cursor = this.contentResolver.query(Uri.parse(this.photoUri),
                 Array(1) {android.provider.MediaStore.Images.ImageColumns.DATA},
                 null, null, null)
         cursor.moveToFirst()
-        val photoPath = cursor.getString(0)
+        photoPath = cursor.getString(0)
         cursor.close()
         val file = File(photoPath)
         val uri = Uri.fromFile(file)
@@ -104,12 +106,17 @@ class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate {
                                 .show()
                     }
 
-
                 }).check()
     }
 
     override fun locationReaded(currentLocation: Location) {
-        print(currentLocation)
         //TODO: zapisanie tej otrzymanej lokalizacji do exifu zdjęcia
+        photoPath?.let {
+            var exifParams = ExifInterface(it)
+            var location = exifParams.latLong
+            exifParams.setLatLong(currentLocation.latitude, currentLocation.longitude)
+            //exifParams.setLatLong(51.5033640, 0.0) TODO: for testing uncomment this part
+            exifParams.saveAttributes()
+        }
     }
 }
