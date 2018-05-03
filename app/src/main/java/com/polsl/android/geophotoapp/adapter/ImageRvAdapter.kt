@@ -44,7 +44,7 @@ class ImageRvAdapter(private val context: Context) : BaseRvAdapter() {
             holder.photoCb?.visibility = View.GONE
         (holder.itemLayout?.setOnLongClickListener(View.OnLongClickListener {
             isSelecting = !isSelecting
-            if(!isSelecting)
+            if (!isSelecting)
                 unselectAllItems()
             notifyDataSetChanged()
             return@OnLongClickListener true
@@ -52,7 +52,7 @@ class ImageRvAdapter(private val context: Context) : BaseRvAdapter() {
     }
 
     private fun unselectAllItems() {
-        for(item in items as ArrayList<SelectablePhotoModel>)
+        for (item in items as ArrayList<SelectablePhotoModel>)
             item.isSelected = false
         selectedItemsObservable.onNext(0)
     }
