@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar
 import android.support.media.ExifInterface
 import android.support.v7.app.AlertDialog
 import android.view.View
+import android.view.WindowManager
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -17,6 +18,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.Services.LocationProvider
 import com.polsl.android.geophotoapp.Services.LocationProviderDelegate
+import com.polsl.android.geophotoapp.dialog.ProgressDialog
 import kotlinx.android.synthetic.main.activity_taken_photo.*
 import java.io.File
 
@@ -24,11 +26,14 @@ class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate {
 
     var photoUri: String? = null
     var photoPath: String? = null
+    var progressDialog = ProgressDialog()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_taken_photo)
         photoUri = intent.getStringExtra("photoUrl")
+        progressDialog.isCancelable = false
+        //progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         setupButtonsAction()
         processCapturedPhoto()
     }
@@ -68,6 +73,7 @@ class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate {
     private fun provideLocation() {
         var locationReader = LocationProvider(context = this)
         locationReader.delegate = this
+        progressDialog.show(supportFragmentManager, "progress")
         locationReader.provideLocation()
     }
 
@@ -118,5 +124,6 @@ class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate {
             //exifParams.setLatLong(51.5033640, 0.0) TODO: for testing uncomment this part
             exifParams.saveAttributes()
         }
+        progressDialog.dismiss()
     }
 }
