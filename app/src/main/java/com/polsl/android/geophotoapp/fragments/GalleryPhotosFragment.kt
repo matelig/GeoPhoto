@@ -69,7 +69,7 @@ class GalleryPhotosFragment : Fragment() {
                     var imageExif = ExifInterface(imagePaths[position])
                     var location = imageExif.latLong
                     print("mesedz")
-                    Toast.makeText(context, "Latitude $location[0], longitude $location[1]", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Latitude $location[0]), longitude $location[1]", Toast.LENGTH_SHORT).show()
                 }
     }
 

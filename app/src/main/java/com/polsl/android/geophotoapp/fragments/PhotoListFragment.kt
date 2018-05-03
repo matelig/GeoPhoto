@@ -87,13 +87,14 @@ class PhotoListFragment : Fragment() {
                     var photoModel = it as? SelectablePhotoModel
                     photoModel?.photo?.let {
                         Toast.makeText(this.context, "Clicked on ${it.url}", Toast.LENGTH_LONG).show()
-                        showEditExifActivity("id")
+                        showEditExifActivity(it.url)
                     }
                 })
     }
 
     private fun showEditExifActivity(photoId: String) {
         val intent = Intent(this.context, EditExifActivity::class.java)
+        intent.putExtra("photoUrl", photoId)
         startActivity(intent)
     }
 
