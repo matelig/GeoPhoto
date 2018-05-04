@@ -14,8 +14,12 @@ import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.adapter.GalleryImageRvAdapter
 import com.polsl.android.geophotoapp.model.Photo
 import com.polsl.android.geophotoapp.model.SelectablePhotoModel
+import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_gallery_photos.*
+import java.io.File
 
 
 class GalleryPhotosFragment : Fragment() {
@@ -35,6 +39,27 @@ class GalleryPhotosFragment : Fragment() {
         photos = getImagePaths(context)
         preparePhotosAdapter()
         setupItemClick()
+        prepareUploadButton()
+    }
+
+    private fun prepareUploadButton() {
+        uploadPhotosButton.setOnClickListener(View.OnClickListener {
+            uploadSelectedPhotos()
+            Toast.makeText(activity, "Photos downloaded", Toast.LENGTH_SHORT).show()
+        })
+    }
+
+    //todo: check if it even works
+    private fun uploadSelectedPhotos() {
+        val apiService = GeoPhotoEndpoints.create()
+        for (photo in adapter!!.items!!) {
+            if ((photo as SelectablePhotoModel).isSelected) {
+                val uploadFlowable = apiService.upoladPhoto(File(photo.photo.thumbnailUrl), "test")
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                uploadFlowable.subscribe()
+            }
+        }
     }
 
     private fun preparePhotosAdapter() {
@@ -42,11 +67,11 @@ class GalleryPhotosFragment : Fragment() {
         galleryPhotosRv.layoutManager = GridLayoutManager(activity, 4)
         adapter!!.items = getSelectablePhotos() as ArrayList<Any>
         adapter!!.selectedItemsObservable.subscribe({ t ->
-            //            if (t > 0) {
-//                selectedPhotoLayout.visibility = View.VISIBLE
-//                selectedPhotosTv.text = getString(R.string.selected_photos, t)
-//            } else
-//                selectedPhotoLayout.visibility = View.GONE
+            if (t > 0) {
+                selectedPhotoLayout.visibility = View.VISIBLE
+                selectedPhotosTv.text = getString(R.string.selected_photos, t)
+            } else
+                selectedPhotoLayout.visibility = View.GONE
         })
         galleryPhotosRv.adapter = adapter
     }
