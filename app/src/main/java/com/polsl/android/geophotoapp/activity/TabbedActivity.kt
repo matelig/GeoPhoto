@@ -1,5 +1,6 @@
 package com.polsl.android.geophotoapp.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
@@ -7,6 +8,7 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.fragments.GalleryPhotosFragment
 import com.polsl.android.geophotoapp.fragments.MakePhotoFragment
@@ -25,15 +27,16 @@ class TabbedActivity : BaseActivity() {
      * may be best to switch to a
      * [android.support.v4.app.FragmentStatePagerAdapter].
      */
+    companion object {
+        const val FILTERS_CODE: Int = 1001
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tabbed)
-
         setSupportActionBar(toolbar)
-
+        setupFiltersButton()
         val tabsAdapter = SectionsPagerAdapter(supportFragmentManager, 4)
-
         container.adapter = tabsAdapter
         container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
         container.pageMargin = 4
@@ -48,11 +51,27 @@ class TabbedActivity : BaseActivity() {
             }
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
+                if (tab!!.position == 0)
+                    showFilterIcon()
+                else
+                    hideFilterIcon()
             }
 
         })
     }
 
+    private fun setupFiltersButton() {
+        filterIcon.visibility = View.VISIBLE
+        filterIcon.setOnClickListener({ openFiltersActivity() })
+    }
+
+    fun showFilterIcon() {
+        filterIcon.visibility = View.VISIBLE
+    }
+
+    fun hideFilterIcon() {
+        filterIcon.visibility = View.GONE
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_tabbed, menu)
@@ -88,7 +107,7 @@ class TabbedActivity : BaseActivity() {
      */
     inner class SectionsPagerAdapter(fm: FragmentManager, private val numberOfTabs: Int) : FragmentPagerAdapter(fm) {
 
-        private val tabTitles = arrayOf("Photos","Make photo", "Map", "Device photos")
+        private val tabTitles = arrayOf("Photos", "Make photo", "Map", "Device photos")
 
         override fun getPageTitle(position: Int): CharSequence {
             return tabTitles[position]
@@ -96,17 +115,28 @@ class TabbedActivity : BaseActivity() {
 
         override fun getItem(position: Int): Fragment {
             return when (position) {
-                0 -> PhotoListFragment()
-                1 -> MakePhotoFragment()
-                2 -> MapFragment.newInstance(0.0,0.0)
-                3 -> GalleryPhotosFragment.newInstance()
-                else -> MakePhotoFragment()
+                0 ->
+                    PhotoListFragment()
+                1 ->
+                    MakePhotoFragment()
+                2 ->
+                    MapFragment.newInstance(0.0, 0.0)
+                3 ->
+                    GalleryPhotosFragment.newInstance()
+                else ->
+                    MakePhotoFragment()
             }
         }
 
         override fun getCount(): Int {
             return numberOfTabs
         }
+    }
+
+
+    fun openFiltersActivity() {
+        val intent = Intent(this, FilterActivity::class.java)
+        startActivityForResult(intent, FILTERS_CODE)
     }
 
 }

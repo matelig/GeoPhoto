@@ -1,5 +1,6 @@
 package com.polsl.android.geophotoapp.fragments
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.activity.EditExifActivity
+import com.polsl.android.geophotoapp.activity.TabbedActivity
 import com.polsl.android.geophotoapp.adapter.ImageRvAdapter
 import com.polsl.android.geophotoapp.model.Photo
 import com.polsl.android.geophotoapp.model.SelectablePhotoModel
@@ -21,9 +23,10 @@ import kotlinx.android.synthetic.main.fragment_photo_list.*
  */
 class PhotoListFragment : Fragment() {
 
-//todo message when there is no internet
+    //todo message when there is no internet
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_photo_list, container, false)
+
         return rootView
     }
 
@@ -101,5 +104,12 @@ class PhotoListFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         subscribe?.dispose()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == TabbedActivity.FILTERS_CODE) {
+            //handle filters
+        }
     }
 }
