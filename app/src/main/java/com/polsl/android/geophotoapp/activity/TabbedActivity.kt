@@ -99,7 +99,7 @@ class TabbedActivity : BaseActivity() {
                 0 -> PhotoListFragment()
                 1 -> MakePhotoFragment()
                 2 -> MapFragment.newInstance(0.0,0.0)
-                3 -> GalleryPhotosFragment.newInstance()
+                3 -> GalleryPhotosFragment()
                 else -> MakePhotoFragment()
             }
         }

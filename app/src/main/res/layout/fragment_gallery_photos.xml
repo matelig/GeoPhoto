@@ -3,18 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".fragments.GalleryPhotosFragment">
 
-    <GridView
-        android:id="@+id/photosGrid"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/galleryPhotosRv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:columnWidth="90dp"
-        android:gravity="center"
-        android:horizontalSpacing="5dp"
-        android:numColumns="auto_fit"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="5dp"
-        android:layout_marginBottom="60dp" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
