@@ -1,6 +1,5 @@
 package com.polsl.android.geophotoapp.activity
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
@@ -15,6 +14,7 @@ import com.polsl.android.geophotoapp.fragments.MakePhotoFragment
 import com.polsl.android.geophotoapp.fragments.MapFragment
 import com.polsl.android.geophotoapp.fragments.PhotoListFragment
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_tabbed.*
 
 class TabbedActivity : BaseActivity() {
@@ -30,6 +30,8 @@ class TabbedActivity : BaseActivity() {
     companion object {
         const val FILTERS_CODE: Int = 1001
     }
+
+    val filtersClickObservable = PublishSubject.create<Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,10 +135,8 @@ class TabbedActivity : BaseActivity() {
         }
     }
 
-
     fun openFiltersActivity() {
-        val intent = Intent(this, FilterActivity::class.java)
-        startActivityForResult(intent, FILTERS_CODE)
+        filtersClickObservable.onNext(true)
     }
 
 }

@@ -19,7 +19,6 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.polsl.android.geophotoapp.R
-import com.polsl.android.geophotoapp.activity.TabbedActivity
 import com.polsl.android.geophotoapp.activity.TakenPhotoActivity
 import kotlinx.android.synthetic.main.fragment_make_photo.*
 

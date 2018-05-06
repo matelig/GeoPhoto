@@ -9,14 +9,12 @@ import com.polsl.android.geophotoapp.model.SelectablePhotoModel
 import com.polsl.android.geophotoapp.viewholder.BaseViewHolder
 import com.polsl.android.geophotoapp.viewholder.PhotoViewHolder
 import com.squareup.picasso.Picasso
-import io.reactivex.subjects.PublishSubject
 
 /**
  * Created by alachman on 29.04.2018.
  */
 
 class ImageRvAdapter(private val context: Context) : BaseRvAdapter() {
-    val selectedItemsObservable = PublishSubject.create<Int>()
     private var isSelecting = false
     override fun onCreateBaseViewHolder(parent: ViewGroup?): BaseViewHolder {
         val view = LayoutInflater.from(parent?.context).inflate(R.layout.photo_item, parent, false)
@@ -54,11 +52,11 @@ class ImageRvAdapter(private val context: Context) : BaseRvAdapter() {
     private fun unselectAllItems() {
         for (item in items as ArrayList<SelectablePhotoModel>)
             item.isSelected = false
-        selectedItemsObservable.onNext(0)
+        getItemClickObservable().onNext(0)
     }
 
     private fun updateSelectedItemsObservable() {
-        selectedItemsObservable.onNext(getSelectedItemsCount())
+        getItemClickObservable().onNext(getSelectedItemsCount())
     }
 
     private fun getSelectedItemsCount(): Int =

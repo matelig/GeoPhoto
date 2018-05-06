@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Toast
 import com.polsl.android.geophotoapp.R
-import com.polsl.android.geophotoapp.activity.TabbedActivity
 import com.polsl.android.geophotoapp.adapter.ImageAdapter
 import kotlinx.android.synthetic.main.fragment_gallery_photos.*
 
