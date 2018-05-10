@@ -62,8 +62,8 @@ class GalleryPhotosFragment : Fragment() {
             if ((photo as SelectablePhotoModel).isSelected) {
                 val basic = Credentials.basic(userData!!.username, userData!!.password)
                 val file = File(photo.photo.thumbnailUrl)
-                val reqFile = RequestBody.create(MediaType.parse("image/*"), file)
-                val body = MultipartBody.Part.createFormData("upload", file.name, reqFile)
+                val reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
+                val body = MultipartBody.Part.createFormData("photo", file.name, reqFile)
                 val upload = apiService.upoladPhoto(body, basic)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
