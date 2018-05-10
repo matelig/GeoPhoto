@@ -15,10 +15,15 @@ import com.polsl.android.geophotoapp.adapter.GalleryImageRvAdapter
 import com.polsl.android.geophotoapp.model.Photo
 import com.polsl.android.geophotoapp.model.SelectablePhotoModel
 import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
+import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_gallery_photos.*
+import okhttp3.Credentials
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.File
 
 
@@ -45,19 +50,28 @@ class GalleryPhotosFragment : Fragment() {
     private fun prepareUploadButton() {
         uploadPhotosButton.setOnClickListener(View.OnClickListener {
             uploadSelectedPhotos()
-            Toast.makeText(activity, "Photos downloaded", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, "Photos uploaded", Toast.LENGTH_SHORT).show()
         })
     }
 
     //todo: check if it even works
     private fun uploadSelectedPhotos() {
+        val userData = UserDataSharedPrefsHelper(activity).getLoggedUser()
         val apiService = GeoPhotoEndpoints.create()
         for (photo in adapter!!.items!!) {
             if ((photo as SelectablePhotoModel).isSelected) {
-                val uploadFlowable = apiService.upoladPhoto(File(photo.photo.thumbnailUrl), "test")
+                val basic = Credentials.basic(userData!!.username, userData!!.password)
+                val file = File(photo.photo.thumbnailUrl)
+                val reqFile = RequestBody.create(MediaType.parse("image/*"), file)
+                val body = MultipartBody.Part.createFormData("upload", file.name, reqFile)
+                val upload = apiService.upoladPhoto(body, basic)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                uploadFlowable.subscribe()
+                upload.subscribe({ result ->
+                    Toast.makeText(activity, "wysłano", Toast.LENGTH_SHORT).show()
+                }, { error ->
+                    Toast.makeText(activity, "error", Toast.LENGTH_SHORT).show()
+                })
             }
         }
     }

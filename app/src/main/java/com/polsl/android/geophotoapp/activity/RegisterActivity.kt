@@ -9,7 +9,10 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.model.UserData
+import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_register.*
 
 
@@ -25,9 +28,17 @@ class RegisterActivity : BaseActivity() {
 
     private fun register() {
         //todo handle registration on server
-        val userData = UserData(usernameEditText.text.toString(), "apiKey")
+        val userData = UserData(usernameEditText.text.toString(), passwordEditText.text.toString())
         UserDataSharedPrefsHelper(this).saveLoggedUser(userData)
-        onRegistered()
+        val requestHandle = GeoPhotoEndpoints.create()
+        requestHandle.register(UserData(usernameEditText.text.toString(), passwordEditText.text.toString()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe({ result ->
+                    onRegistered()
+                }, { error ->
+                    onError(error)
+                })
     }
 
     private fun validateFields(): Boolean {
