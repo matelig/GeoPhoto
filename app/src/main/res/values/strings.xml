@@ -31,11 +31,9 @@
     <string name="action_logout">Logout</string>
     <string name="logout">You are logged out</string>
     <string name="selected_photos">Selected %d photos</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="edit_exif">Edit exif attributes of selected photo</string>
     <string name="exif_location">Set up photo location</string>
     <string name="ok">OK</string>
     <string name="cancel">CANCEL</string>
+    <string name="upload_photos">Upload photos</string>
 </resources>
