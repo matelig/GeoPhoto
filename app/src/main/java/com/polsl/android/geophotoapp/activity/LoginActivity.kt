@@ -8,6 +8,8 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.polsl.android.geophotoapp.R
+import com.polsl.android.geophotoapp.Services.networking.UserNetworking
+import com.polsl.android.geophotoapp.Services.networking.UserNetworkingDelegate
 import com.polsl.android.geophotoapp.model.UserData
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
 import kotlinx.android.synthetic.main.activity_login.*
@@ -15,18 +17,20 @@ import kotlinx.android.synthetic.main.activity_login.*
 /**
  * Created by alachman on 21.04.2018.
  */
-class LoginActivity : BaseActivity() {
+class LoginActivity : BaseActivity(), UserNetworkingDelegate {
+
+    val networking = UserNetworking(context = this)
 
     private fun loginUser() {
         //todo validate user login data on server
-        val userData = UserData(usernameEditText.text.toString(), "apiKey")
-        UserDataSharedPrefsHelper(this).saveLoggedUser(userData)
-        onLogin()
+        val userData = UserData(usernameEditText.text.toString(), passwordEditText.text.toString())
+        networking.login(userData)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        networking.delegate = this
         setupUIForKeyboardHiding(parentLayout)
         setupButtons()
         checkPermissions()
@@ -82,18 +86,22 @@ class LoginActivity : BaseActivity() {
         return !usernameEditText!!.text.toString().isEmpty() && !passwordEditText!!.text.toString().isEmpty()
     }
 
-    fun showAuthenticationError() {
-        displayToast(R.string.login_authentication_error)
-    }
-
     fun onLogin() {
         displayToast(R.string.login_success)
         startActivity(TabbedActivity::class.java)
         finish()
     }
 
-    fun onError() {
-        displayToast(R.string.error)
+    override fun success() {
+        UserDataSharedPrefsHelper(this).saveLoggedUser(UserData(usernameEditText.text.toString(), passwordEditText.text.toString()))
+        //TODO: save api key from response
+        onLogin()
+    }
+
+    override fun error(error: Throwable) {
+        error.message?.let {
+            displayToast(it)
+        }
     }
 
 }

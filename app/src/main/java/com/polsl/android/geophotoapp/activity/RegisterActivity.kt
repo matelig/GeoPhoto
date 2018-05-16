@@ -8,6 +8,8 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.polsl.android.geophotoapp.R
+import com.polsl.android.geophotoapp.Services.networking.UserNetworking
+import com.polsl.android.geophotoapp.Services.networking.UserNetworkingDelegate
 import com.polsl.android.geophotoapp.model.UserData
 import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
@@ -16,7 +18,17 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_register.*
 
 
-class RegisterActivity : BaseActivity() {
+class RegisterActivity : BaseActivity(), UserNetworkingDelegate {
+
+    var networking = UserNetworking(context = this)
+
+    override fun success() {
+        onRegistered()
+    }
+
+    override fun error(error: Throwable) {
+        displayToast(getString(R.string.register_error, error.message))
+    }
 
     fun onRegisterClicked() {
         if (validateFields()) {
@@ -27,18 +39,7 @@ class RegisterActivity : BaseActivity() {
     }
 
     private fun register() {
-        //todo handle registration on server
-        val userData = UserData(usernameEditText.text.toString(), passwordEditText.text.toString())
-        UserDataSharedPrefsHelper(this).saveLoggedUser(userData)
-        val requestHandle = GeoPhotoEndpoints.create()
-        requestHandle.register(UserData(usernameEditText.text.toString(), passwordEditText.text.toString()))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe({ result ->
-                    onRegistered()
-                }, { error ->
-                    onError(error)
-                })
+        networking.register(UserData(usernameEditText.text.toString(), passwordEditText.text.toString()))
     }
 
     private fun validateFields(): Boolean {
@@ -56,6 +57,7 @@ class RegisterActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+        networking.delegate = this
         setupUIForKeyboardHiding(parentLayout!!)
         setupButtons()
         checkPermissions()
@@ -84,10 +86,6 @@ class RegisterActivity : BaseActivity() {
                     }
 
                 }).check()
-    }
-
-    fun onError(throwable: Throwable) {
-        displayToast(getString(R.string.register_error, throwable.message))
     }
 
     fun onRegistered() {

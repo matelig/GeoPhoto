@@ -11,6 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.polsl.android.geophotoapp.R
+import com.polsl.android.geophotoapp.Services.networking.PhotoNetworking
+import com.polsl.android.geophotoapp.Services.networking.PhotoNetworkingDelegate
+import com.polsl.android.geophotoapp.Services.networking.UserNetworking
+import com.polsl.android.geophotoapp.Services.networking.UserNetworkingDelegate
 import com.polsl.android.geophotoapp.adapter.GalleryImageRvAdapter
 import com.polsl.android.geophotoapp.model.Photo
 import com.polsl.android.geophotoapp.model.SelectablePhotoModel
@@ -27,16 +31,19 @@ import okhttp3.RequestBody
 import java.io.File
 
 
-class GalleryPhotosFragment : Fragment() {
+class GalleryPhotosFragment : Fragment(), PhotoNetworkingDelegate {
 
     private lateinit var photos: List<String>
     var adapter: GalleryImageRvAdapter? = null
     private var subscribe: Disposable? = null
+    var networking: PhotoNetworking? = null
 
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         photos = getImagePaths(context)
+        networking = PhotoNetworking(context)
+        networking?.delegate = this
         preparePhotosAdapter()
         setupItemClick()
         prepareUploadButton()
@@ -45,28 +52,14 @@ class GalleryPhotosFragment : Fragment() {
     private fun prepareUploadButton() {
         uploadPhotosButton.setOnClickListener(View.OnClickListener {
             uploadSelectedPhotos()
-            Toast.makeText(activity, "Photos uploaded", Toast.LENGTH_SHORT).show()
         })
     }
 
     //todo: check if it even works
     private fun uploadSelectedPhotos() {
-        val userData = UserDataSharedPrefsHelper(activity).getLoggedUser()
-        val apiService = GeoPhotoEndpoints.create()
         for (photo in adapter!!.items!!) {
             if ((photo as SelectablePhotoModel).isSelected) {
-                val basic = Credentials.basic(userData!!.username, userData!!.password)
-                val file = File(photo.photo.thumbnailUrl)
-                val reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
-                val body = MultipartBody.Part.createFormData("photo", file.name, reqFile)
-                val upload = apiService.upoladPhoto(body, basic)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                upload.subscribe({ result ->
-                    Toast.makeText(activity, "wysłano", Toast.LENGTH_SHORT).show()
-                }, { error ->
-                    Toast.makeText(activity, "error", Toast.LENGTH_SHORT).show()
-                })
+                networking?.uploadPhoto(File(photo.photo.thumbnailUrl))
             }
         }
     }
@@ -133,6 +126,16 @@ class GalleryPhotosFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         subscribe?.dispose()
+    }
+
+    override fun success() {
+        Toast.makeText(context,"Photo uploaded",Toast.LENGTH_SHORT).show()
+    }
+
+    override fun error(error: Throwable) {
+        error.message?.let {
+            Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
+        }
     }
 
 }
