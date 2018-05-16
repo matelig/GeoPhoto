@@ -124,7 +124,7 @@ class TabbedActivity : BaseActivity() {
                 2 ->
                     MapFragment.newInstance(0.0, 0.0)
                 3 ->
-                    GalleryPhotosFragment.newInstance()
+                    GalleryPhotosFragment()
                 else ->
                     MakePhotoFragment()
             }

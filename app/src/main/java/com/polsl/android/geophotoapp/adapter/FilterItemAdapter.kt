@@ -31,9 +31,10 @@ class FilterItemAdapter(private val context: Context) : BaseRvAdapter() {
             holder.itemLayout?.background = context.getDrawable(R.drawable.white_round_background)
     }
 
-    private fun unselectAllItems() {
+     fun unselectAllItems() {
         for (item in items as ArrayList<SelectableFilterModel>)
             item.isSelected = false
+         notifyDataSetChanged()
     }
 
 }

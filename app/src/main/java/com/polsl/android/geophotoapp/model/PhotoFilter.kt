@@ -19,4 +19,12 @@ class PhotoFilter : Serializable {
     var apertures: ArrayList<String> = ArrayList()
     var devices: ArrayList<String> = ArrayList()
     var focalLengths: ArrayList<String> = ArrayList()
+
+    fun resetFilter() {
+        dateType = null
+        exposures = ArrayList()
+        apertures = ArrayList()
+        devices = ArrayList()
+        focalLengths = ArrayList()
+    }
 }

@@ -3,7 +3,6 @@ package com.polsl.android.geophotoapp.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.media.ExifInterface
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
@@ -29,7 +28,6 @@ class PhotoListFragment : Fragment() {
     //todo message when there is no internet
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_photo_list, container, false)
-
         return rootView
     }
 
@@ -128,8 +126,18 @@ class PhotoListFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == TabbedActivity.FILTERS_CODE) {
-            //handle filters
+            val photoFilter = data.extras.getSerializable(FilterActivity.FILTER_KEY) as PhotoFilter
+            filterPhotos(photoFilter)
+            sortPhotos(photoFilter)
         }
+    }
+
+    private fun sortPhotos(photoFilter: PhotoFilter) {
+        //sort photos by date ascending/descending
+    }
+
+    private fun filterPhotos(photoFilter: PhotoFilter) {
+      //filter photos 
     }
 
     fun getDevicesName(): ArrayList<String?>? {
@@ -137,7 +145,7 @@ class PhotoListFragment : Fragment() {
         test.add("Samsung TM-78")
         test.add("Xiaomi Red Mi")
         return test
-       // return photos?.map { photo -> photo.exif?.getAttribute(ExifInterface.TAG_MODEL) }?.toList() as ArrayList<String?>
+        // return photos?.map { photo -> photo.exif?.getAttribute(ExifInterface.TAG_MODEL) }?.toList() as ArrayList<String?>
     }
 
     fun getFocalLengths(): ArrayList<String?>? {

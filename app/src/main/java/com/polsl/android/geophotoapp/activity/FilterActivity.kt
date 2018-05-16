@@ -1,5 +1,7 @@
 package com.polsl.android.geophotoapp.activity
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import com.polsl.android.geophotoapp.R
@@ -19,11 +21,52 @@ class FilterActivity : BaseActivity() {
     private var focalLengths: ArrayList<String>? = null
     private var photoFilter: PhotoFilter = PhotoFilter()
 
+    private lateinit var aperturesAdapter: FilterItemAdapter
+    private lateinit var devicesAdapter: FilterItemAdapter
+    private lateinit var focalLengthAdapter: FilterItemAdapter
+    private lateinit var exposuresAdapter: FilterItemAdapter
+
+    companion object {
+        const val FILTER_KEY = "filterKey"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_filter)
         setUpFiltersData()
         setUpDateRadioButtons()
+        setUpButtons()
+    }
+
+    fun setUpButtons() {
+        setUpResetButton()
+        setUpApplyButton()
+    }
+
+    private fun setUpApplyButton() {
+        applyFiltersBtn.setOnClickListener({ onApplyButtonClicked() })
+
+    }
+
+    private fun onApplyButtonClicked() {
+        val resultIntent = Intent()
+        resultIntent.putExtra(FILTER_KEY, photoFilter)
+        setResult(Activity.RESULT_OK, resultIntent)
+        finish()
+    }
+
+    private fun setUpResetButton() {
+        resetFiltersBtn.setOnClickListener({ onResetButtonClicked() })
+    }
+
+    private fun onResetButtonClicked() {
+        photoFilter.resetFilter()
+        dateAscendingRb.isChecked = false
+        dateDescendingRb.isChecked = false
+        aperturesAdapter.unselectAllItems()
+        devicesAdapter.unselectAllItems()
+        exposuresAdapter.unselectAllItems()
+        focalLengthAdapter.unselectAllItems()
     }
 
     private fun setUpDateRadioButtons() {
@@ -36,7 +79,6 @@ class FilterActivity : BaseActivity() {
                 photoFilter.dateType = DateFilterType.DESCENDING
         }
     }
-
 
     private fun setUpFiltersData() {
         exposures = intent.getStringArrayListExtra(PhotoFilter.EXPOSURES)
@@ -54,7 +96,7 @@ class FilterActivity : BaseActivity() {
     }
 
     private fun setUpFocalLengthsAdapter() {
-        val focalLengthAdapter = FilterItemAdapter(this)
+        focalLengthAdapter = FilterItemAdapter(this)
         filterFocalLengthRv.layoutManager = GridLayoutManager(this, 4)
         focalLengthAdapter.items = getSelectableFilterModels(focalLengths) as ArrayList<Any>
         focalLengthAdapter.getItemClickObservable().subscribe({ t ->
@@ -67,7 +109,6 @@ class FilterActivity : BaseActivity() {
         filterFocalLengthRv.adapter = focalLengthAdapter
     }
 
-
     private fun getSelectableFilterModels(filterList: ArrayList<String>?): ArrayList<SelectableFilterModel>? {
         var selectableFilterModels = ArrayList<SelectableFilterModel>()
         for (filter in filterList!!)
@@ -76,7 +117,7 @@ class FilterActivity : BaseActivity() {
     }
 
     private fun setUpExposuresAdapter() {
-        val exposuresAdapter = FilterItemAdapter(this)
+        exposuresAdapter = FilterItemAdapter(this)
         filterExposureRv.layoutManager = GridLayoutManager(this, 4)
         exposuresAdapter.items = getSelectableFilterModels(exposures) as ArrayList<Any>
         exposuresAdapter.getItemClickObservable().subscribe({ t ->
@@ -90,7 +131,7 @@ class FilterActivity : BaseActivity() {
     }
 
     private fun setUpDevicesAdapter() {
-        val devicesAdapter = FilterItemAdapter(this)
+        devicesAdapter = FilterItemAdapter(this)
         filterDeviceRv.layoutManager = GridLayoutManager(this, 4)
         devicesAdapter.items = getSelectableFilterModels(devices) as ArrayList<Any>
         devicesAdapter.getItemClickObservable().subscribe({ t ->
@@ -104,7 +145,7 @@ class FilterActivity : BaseActivity() {
     }
 
     private fun setUpAperturesAdapter() {
-        val aperturesAdapter = FilterItemAdapter(this)
+        aperturesAdapter = FilterItemAdapter(this)
         filterApertureRv.layoutManager = GridLayoutManager(this, 4)
         aperturesAdapter.items = getSelectableFilterModels(apertures) as ArrayList<Any>
         aperturesAdapter.getItemClickObservable().subscribe({ t ->

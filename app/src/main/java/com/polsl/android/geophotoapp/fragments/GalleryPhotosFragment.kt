@@ -5,32 +5,105 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.support.media.ExifInterface
 import android.support.v4.app.Fragment
+import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.Toast
 import com.polsl.android.geophotoapp.R
-import com.polsl.android.geophotoapp.adapter.ImageAdapter
+import com.polsl.android.geophotoapp.adapter.GalleryImageRvAdapter
+import com.polsl.android.geophotoapp.model.Photo
+import com.polsl.android.geophotoapp.model.SelectablePhotoModel
+import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
+import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_gallery_photos.*
+import okhttp3.Credentials
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [GalleryPhotosFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [GalleryPhotosFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
+
 class GalleryPhotosFragment : Fragment() {
-    private var listener: OnFragmentInteractionListener? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            //param1 = it.getString(ARG_PARAM1)
+    private lateinit var photos: List<String>
+    var adapter: GalleryImageRvAdapter? = null
+    private var subscribe: Disposable? = null
+
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        photos = getImagePaths(context)
+        preparePhotosAdapter()
+        setupItemClick()
+        prepareUploadButton()
+    }
+
+    private fun prepareUploadButton() {
+        uploadPhotosButton.setOnClickListener(View.OnClickListener {
+            uploadSelectedPhotos()
+            Toast.makeText(activity, "Photos uploaded", Toast.LENGTH_SHORT).show()
+        })
+    }
+
+    //todo: check if it even works
+    private fun uploadSelectedPhotos() {
+        val userData = UserDataSharedPrefsHelper(activity).getLoggedUser()
+        val apiService = GeoPhotoEndpoints.create()
+        for (photo in adapter!!.items!!) {
+            if ((photo as SelectablePhotoModel).isSelected) {
+                val basic = Credentials.basic(userData!!.username, userData!!.password)
+                val file = File(photo.photo.thumbnailUrl)
+                val reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
+                val body = MultipartBody.Part.createFormData("photo", file.name, reqFile)
+                val upload = apiService.upoladPhoto(body, basic)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                upload.subscribe({ result ->
+                    Toast.makeText(activity, "wysłano", Toast.LENGTH_SHORT).show()
+                }, { error ->
+                    Toast.makeText(activity, "error", Toast.LENGTH_SHORT).show()
+                })
+            }
         }
+    }
+
+    private fun preparePhotosAdapter() {
+        adapter = GalleryImageRvAdapter(activity)
+        galleryPhotosRv.layoutManager = GridLayoutManager(activity, 4)
+        adapter!!.items = getSelectablePhotos() as ArrayList<Any>
+        adapter!!.selectedItemsObservable.subscribe({ t ->
+            if (t > 0) {
+                selectedPhotoLayout.visibility = View.VISIBLE
+                selectedPhotosTv.text = getString(R.string.selected_photos, t)
+            } else
+                selectedPhotoLayout.visibility = View.GONE
+        })
+        galleryPhotosRv.adapter = adapter
+    }
+
+    private fun getSelectablePhotos(): ArrayList<SelectablePhotoModel>? {
+        var selectablePhotos = ArrayList<SelectablePhotoModel>()
+        for (photo in photos)
+            selectablePhotos.add(SelectablePhotoModel(Photo(photo), false))
+        return selectablePhotos
+    }
+
+    private fun setupItemClick() {
+        subscribe = adapter?.getItemClickObservable()
+                ?.subscribe({
+                    var photoModel = it as? SelectablePhotoModel
+                    photoModel?.photo?.let {
+                        //Toast.makeText(this.context, "Clicked on ${it.url}", Toast.LENGTH_LONG).show()
+                        var imageExif = ExifInterface(it.url)
+                        var location = imageExif.latLong
+                        Toast.makeText(context, "Latitude ${location?.get(0)}, longitude ${location?.get(1)}", Toast.LENGTH_SHORT).show()
+                        //showEditExifActivity(it.url)
+                    }
+                })
     }
 
     private fun getImagePaths(context: Context): List<String> {
@@ -57,53 +130,9 @@ class GalleryPhotosFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_gallery_photos, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val imagePaths = getImagePaths(context)
-        photosGrid.adapter = ImageAdapter(context, imagePaths)
-        photosGrid.onItemClickListener =
-                AdapterView.OnItemClickListener { _, v, position, _ ->
-                    Toast.makeText(context, imagePaths[position], Toast.LENGTH_SHORT).show()
-
-                    var imageExif = ExifInterface(imagePaths[position])
-                    var location = imageExif.latLong
-                    print("mesedz")
-                    Toast.makeText(context, "Latitude $location[0]), longitude $location[1]", Toast.LENGTH_SHORT).show()
-                }
+    override fun onDestroy() {
+        super.onDestroy()
+        subscribe?.dispose()
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        //fun onFragmentInteraction(uri: Uri)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment GalleryPhotosFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance() =
-                GalleryPhotosFragment().apply {
-                    arguments = Bundle().apply {
-
-                    }
-                }
-    }
 }
