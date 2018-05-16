@@ -11,7 +11,7 @@ import android.support.design.widget.Snackbar
 import android.support.media.ExifInterface
 import android.support.v7.app.AlertDialog
 import android.util.Log
-import android.view.WindowManager
+import android.widget.Toast
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -22,25 +22,28 @@ import com.polsl.android.geophotoapp.Services.LocationProvider
 import com.polsl.android.geophotoapp.Services.LocationProviderDelegate
 import com.polsl.android.geophotoapp.util.Exif
 import com.polsl.android.geophotoapp.dialog.ProgressDialog
+import com.polsl.android.geophotoapp.Services.networking.PhotoNetworking
+import com.polsl.android.geophotoapp.Services.networking.PhotoNetworkingDelegate
 import kotlinx.android.synthetic.main.activity_taken_photo.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
 
-class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate {
+class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate, PhotoNetworkingDelegate {
 
     var photoUri: String? = null
     var photoPath: String? = null
     var bitmap: Bitmap? = null
     var progressDialog = ProgressDialog()
+    var networking = PhotoNetworking(context = this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_taken_photo)
+        networking.delegate = this
         photoUri = intent.getStringExtra("photoUrl")
         progressDialog.isCancelable = false
-        //progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         setupButtonsAction()
         processCapturedPhoto()
     }
@@ -51,8 +54,7 @@ class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate {
     }
 
     private fun processButtonClick() {
-        //TODO: send this photo to server
-        finish()
+        networking.uploadPhoto(File(photoPath))
     }
 
     private fun dismissButtonClick() {
@@ -191,6 +193,16 @@ class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate {
                 }).check()
     }
 
+    override fun success() {
+        displayToast("Photo uploaded")
+    }
+
+    override fun error(error: Throwable) {
+        error.message?.let {
+            displayToast(it)
+        }
+    }
+
     override fun locationReaded(currentLocation: Location) {
         //TODO: zapisanie tej otrzymanej lokalizacji do exifu zdjęcia
         photoPath?.let {
@@ -203,3 +215,4 @@ class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate {
         progressDialog.dismiss()
     }
 }
+

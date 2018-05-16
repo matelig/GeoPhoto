@@ -15,7 +15,7 @@ import retrofit2.http.*
 interface GeoPhotoEndpoints {
 
     @POST("login")
-    fun login(@Body userData: UserData): Call<ResponseBody>
+    fun login(@Body userData: UserData): Observable<ResponseBody>
 
     @POST("registerUser")
     fun register(@Body userData: UserData): Observable<ResponseBody>
@@ -28,8 +28,8 @@ interface GeoPhotoEndpoints {
     fun upoladPhoto(@Part photo: MultipartBody.Part, @Header("Authorization") authorization: String): Observable<Long>
 
     companion object geoPhotoApi {
-        //private const val URL = "http://195.181.223.56:8080/SIM/"
-        private const val URL = "http://192.168.1.2:8080/"
+        private const val URL = "http://195.181.223.56:8080/SIM/"
+        //private const val URL = "http://192.168.1.2:8080/"
 
         fun create(): GeoPhotoEndpoints {
             val builder = OkHttpClient.Builder()
