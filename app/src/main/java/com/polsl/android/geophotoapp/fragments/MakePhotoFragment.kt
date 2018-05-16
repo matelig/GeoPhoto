@@ -5,29 +5,22 @@ import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
-import android.location.Location
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import butterknife.BindView
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.polsl.android.geophotoapp.R
-import com.polsl.android.geophotoapp.Services.LocationProvider
-import com.polsl.android.geophotoapp.Services.LocationProviderDelegate
 import com.polsl.android.geophotoapp.activity.TakenPhotoActivity
 import kotlinx.android.synthetic.main.fragment_make_photo.*
-import java.io.File
 
 
 class MakePhotoFragment : Fragment() {
@@ -89,7 +82,7 @@ class MakePhotoFragment : Fragment() {
                 .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         values)
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if(intent.resolveActivity(this.activity.packageManager) != null) {
+        if (intent.resolveActivity(this.activity.packageManager) != null) {
             mCurrentPhotoPath = fileUri.toString()
             intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION

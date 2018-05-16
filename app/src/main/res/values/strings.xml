@@ -35,5 +35,16 @@
     <string name="exif_location">Set up photo location</string>
     <string name="ok">OK</string>
     <string name="cancel">CANCEL</string>
+    <string name="filters">Filters</string>
+    <string name="sort_by">Sort by</string>
+    <string name="date_ascending">Date ascending</string>
+    <string name="date_descending">Date descending</string>
+    <string name="filter_by">Filter by</string>
+    <string name="filter_device">Device</string>
+    <string name="filter_aperture">Aperture</string>
+    <string name="filter_exposure">Exposure</string>
+    <string name="filter_focal_length">Focal length</string>
+    <string name="save">Apply</string>
+    <string name="reset">Reset</string>
     <string name="upload_photos">Upload photos</string>
 </resources>

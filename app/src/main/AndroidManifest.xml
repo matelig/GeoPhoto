@@ -48,13 +48,15 @@
         <activity
             android:name=".activity.EditExifActivity"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.TakenPhotoActivity"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="portrait"
- />
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.FilterActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

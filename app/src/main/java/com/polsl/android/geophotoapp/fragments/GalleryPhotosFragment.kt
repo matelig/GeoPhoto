@@ -33,11 +33,6 @@ class GalleryPhotosFragment : Fragment() {
     var adapter: GalleryImageRvAdapter? = null
     private var subscribe: Disposable? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_gallery_photos, container, false)
-    }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -128,6 +123,11 @@ class GalleryPhotosFragment : Fragment() {
         }
         cursor.close()
         return result
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_gallery_photos, container, false)
     }
 
     override fun onDestroy() {
