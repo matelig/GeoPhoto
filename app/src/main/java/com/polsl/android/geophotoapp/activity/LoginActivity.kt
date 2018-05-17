@@ -22,7 +22,6 @@ class LoginActivity : BaseActivity(), UserNetworkingDelegate {
     val networking = UserNetworking(context = this)
 
     private fun loginUser() {
-        //todo validate user login data on server
         val userData = UserData(usernameEditText.text.toString(), passwordEditText.text.toString())
         networking.login(userData)
     }
@@ -77,7 +76,7 @@ class LoginActivity : BaseActivity(), UserNetworkingDelegate {
     }
 
     private fun checkLogin() {
-        val userData = UserDataSharedPrefsHelper(this).getLoggedUser()
+        val userData = UserDataSharedPrefsHelper(this).getAccessToken()
         if (userData != null)
             onLogin()
     }
@@ -94,12 +93,11 @@ class LoginActivity : BaseActivity(), UserNetworkingDelegate {
 
     override fun success() {
         UserDataSharedPrefsHelper(this).saveLoggedUser(UserData(usernameEditText.text.toString(), passwordEditText.text.toString()))
-        //TODO: save api key from response
         onLogin()
     }
 
-    override fun error(error: Throwable) {
-        error.message?.let {
+    override fun error(error: Throwable?) {
+        error?.message?.let {
             displayToast(it)
         }
     }

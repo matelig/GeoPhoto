@@ -23,11 +23,10 @@ class PhotoNetworking(var context: Context) {
     val sharedPrefs = UserDataSharedPrefsHelper(context)
 
     fun uploadPhoto(photo: File) {
-        val user = sharedPrefs.getLoggedUser()
-        val basic = Credentials.basic(user!!.username, user!!.password)
+        val token = sharedPrefs.getAccessToken()
         val reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), photo)
         val body = MultipartBody.Part.createFormData("photo", photo.name, reqFile)
-        val upload = apiService.upoladPhoto(body, basic)
+        val upload = apiService.upoladPhoto(body, token!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
         upload.subscribe({ result ->

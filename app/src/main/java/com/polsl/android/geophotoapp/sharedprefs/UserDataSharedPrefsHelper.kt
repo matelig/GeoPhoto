@@ -11,6 +11,7 @@ class UserDataSharedPrefsHelper(private val context: Context) : BaseSharedPrefsH
 
     companion object {
         const val JSON_USER = "jsonUser"
+        const val ACCESS_TOKEN = "accessToken"
     }
 
     fun getLoggedUser(): UserData? {
@@ -31,6 +32,23 @@ class UserDataSharedPrefsHelper(private val context: Context) : BaseSharedPrefsH
             prefsEditor.putString(JSON_USER, gson.toJson(user))
         } else {
             prefsEditor.remove(JSON_USER)
+        }
+        return prefsEditor.commit()
+    }
+
+    fun getAccessToken(): String? {
+        val sharedPreferences = context.getSharedPreferences(FILE_PREFS_NAME, Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString(ACCESS_TOKEN, null)
+        return token
+    }
+
+    fun saveAccessToken(token: String?): Boolean {
+        val sharedPreferences = context.getSharedPreferences(FILE_PREFS_NAME, Context.MODE_PRIVATE)
+        val prefsEditor = sharedPreferences.edit()
+        if (token != null) {
+            prefsEditor.putString(ACCESS_TOKEN, token)
+        } else {
+            prefsEditor.remove(ACCESS_TOKEN)
         }
         return prefsEditor.commit()
     }
