@@ -1,5 +1,6 @@
 package com.polsl.android.geophotoapp.rest
 
+import com.polsl.android.geophotoapp.model.LoginResponse
 import com.polsl.android.geophotoapp.model.UserData
 import io.reactivex.Observable
 import okhttp3.MultipartBody
@@ -15,7 +16,7 @@ import retrofit2.http.*
 interface GeoPhotoEndpoints {
 
     @POST("login")
-    fun login(@Body userData: UserData): Observable<ResponseBody>
+    fun login(@Body userData: UserData): Call<LoginResponse>
 
     @POST("registerUser")
     fun register(@Body userData: UserData): Observable<ResponseBody>
@@ -29,7 +30,7 @@ interface GeoPhotoEndpoints {
 
     companion object geoPhotoApi {
         private const val URL = "http://195.181.223.56:8080/SIM/"
-        //private const val URL = "http://192.168.1.2:8080/"
+        //private const val URL = "http://192.168.1.4:8080/"
 
         fun create(): GeoPhotoEndpoints {
             val builder = OkHttpClient.Builder()

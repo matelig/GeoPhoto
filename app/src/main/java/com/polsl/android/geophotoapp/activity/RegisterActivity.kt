@@ -26,8 +26,8 @@ class RegisterActivity : BaseActivity(), UserNetworkingDelegate {
         onRegistered()
     }
 
-    override fun error(error: Throwable) {
-        displayToast(getString(R.string.register_error, error.message))
+    override fun error(error: Throwable?) {
+        displayToast(getString(R.string.register_error, error?.message))
     }
 
     fun onRegisterClicked() {

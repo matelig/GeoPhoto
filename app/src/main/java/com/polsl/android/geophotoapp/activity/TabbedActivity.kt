@@ -101,6 +101,7 @@ class TabbedActivity : BaseActivity() {
 
     private fun logout() {
         UserDataSharedPrefsHelper(this).saveLoggedUser(null)
+        UserDataSharedPrefsHelper(this).saveAccessToken(null)
     }
 
     /**
