@@ -82,7 +82,7 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
         adapter = ImageRvAdapter(activity)
         photosRv.layoutManager = GridLayoutManager(activity, 4)
         adapter!!.items = getSelectablePhotos() as ArrayList<Any>
-        adapter!!.getItemClickObservable().subscribe({ t ->
+        adapter!!.selectedItemsObservable.subscribe({ t ->
             if (t as Int > 0) {
                 selectedPhotoLayout.visibility = View.VISIBLE
                 selectedPhotosTv.text = getString(R.string.selected_photos, t)
