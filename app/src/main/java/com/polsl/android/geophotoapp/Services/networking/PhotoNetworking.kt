@@ -24,8 +24,8 @@ class PhotoNetworking(var context: Context) {
 
     var delegateUpload: UploadPhotoNetworkingDelegate? = null
     var delegateFetch: FetchPhotoNetworkingDelegate? = null
-    val apiService = GeoPhotoEndpoints.create()
-    val sharedPrefs = UserDataSharedPrefsHelper(context)
+    private val apiService = GeoPhotoEndpoints.create()
+    private val sharedPrefs = UserDataSharedPrefsHelper(context)
 
     fun uploadPhoto(photo: File) {
         val token = sharedPrefs.getAccessToken()
@@ -43,8 +43,7 @@ class PhotoNetworking(var context: Context) {
 
     fun getPhotosId() {
         val token = sharedPrefs.getAccessToken()
-        val requestHandle = GeoPhotoEndpoints.create()
-        requestHandle.getPhotoIds(token!!)
+        apiService.getPhotoIds(token!!)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe({ result ->

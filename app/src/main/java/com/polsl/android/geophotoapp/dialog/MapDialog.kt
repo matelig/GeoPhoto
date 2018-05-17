@@ -9,11 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.polsl.android.geophotoapp.R
 import kotlinx.android.synthetic.main.dialog_map.*
@@ -42,6 +40,11 @@ class MapDialog : DialogFragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
+        location?.let { location ->
+            googleMap?.clear()
+            googleMap?.addMarker(MarkerOptions().position(location))
+            googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 8.0F))
+        }
         googleMap?.setOnMapClickListener {
             location = it
             googleMap.clear()

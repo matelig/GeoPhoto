@@ -1,7 +1,8 @@
 package com.polsl.android.geophotoapp.rest
 
-import com.polsl.android.geophotoapp.model.LoginResponse
+import com.polsl.android.geophotoapp.rest.restResponse.LoginResponse
 import com.polsl.android.geophotoapp.model.UserData
+import com.polsl.android.geophotoapp.rest.restResponse.ExifParams
 import io.reactivex.Observable
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -17,6 +18,9 @@ interface GeoPhotoEndpoints {
 
     @POST("login")
     fun login(@Body userData: UserData): Call<LoginResponse>
+
+    @POST("login")
+    fun exifParams(@Body photoId: Long, @Header("Authorization") authorization: String): Call<ExifParams>
 
     @POST("registerUser")
     fun register(@Body userData: UserData): Observable<ResponseBody>
