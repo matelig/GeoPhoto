@@ -16,7 +16,7 @@ class ProgressDialog: DialogFragment() {
         return view
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dialog.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
