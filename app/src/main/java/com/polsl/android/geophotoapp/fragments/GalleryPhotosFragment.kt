@@ -71,7 +71,7 @@ class GalleryPhotosFragment : Fragment(), UploadPhotoNetworkingDelegate {
     private fun getSelectablePhotos(): ArrayList<SelectablePhotoModel>? {
         var selectablePhotos = ArrayList<SelectablePhotoModel>()
         for (photo in photos)
-            selectablePhotos.add(SelectablePhotoModel(Photo(photo), false))
+            selectablePhotos.add(SelectablePhotoModel(Photo(photo,0), false))
         return selectablePhotos
     }
 

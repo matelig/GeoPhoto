@@ -15,7 +15,7 @@ interface UploadPhotoNetworkingDelegate {
     fun error(error: Throwable)
 }
 
-interface  FetchPhotoNetworkingDelegate {
+interface FetchPhotoNetworkingDelegate {
     fun acquired(photosId: List<Long>)
     fun error(error: Throwable)
 }

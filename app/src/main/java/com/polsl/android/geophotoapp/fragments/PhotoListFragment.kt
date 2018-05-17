@@ -113,7 +113,7 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
     private fun getPhotosList(ids: List<Long>): List<Photo> {
         var photos = ArrayList<Photo>()
         for (i in ids)
-            photos.add(Photo(GeoPhotoEndpoints.geoPhotoApi.URL + "miniature?photoId=" + i))
+            photos.add(Photo(GeoPhotoEndpoints.geoPhotoApi.URL + "miniature?photoId=" + i, i))
         return photos
     }
 
@@ -123,14 +123,14 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
                     var photoModel = it as? SelectablePhotoModel
                     photoModel?.photo?.let {
                         Toast.makeText(this.context, "Clicked on ${it.url}", Toast.LENGTH_LONG).show()
-                        showEditExifActivity(it.url)
+                        showEditExifActivity(it.photoId)
                     }
                 })
     }
 
-    private fun showEditExifActivity(photoId: String) {
+    private fun showEditExifActivity(photoId: Long) {
         val intent = Intent(this.context, EditExifActivity::class.java)
-        intent.putExtra("photoUrl", photoId)
+        intent.putExtra("photoId", photoId)
         startActivity(intent)
     }
 
