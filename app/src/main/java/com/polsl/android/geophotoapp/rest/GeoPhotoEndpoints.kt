@@ -21,7 +21,7 @@ interface GeoPhotoEndpoints {
     @POST("registerUser")
     fun register(@Body userData: UserData): Observable<ResponseBody>
 
-    @POST("getPhotoIds")
+    @POST("allPhotos")
     fun getPhotoIds(@Header("Authorization") authorization: String): Observable<List<Long>>
 
     @Multipart
@@ -29,7 +29,7 @@ interface GeoPhotoEndpoints {
     fun upoladPhoto(@Part photo: MultipartBody.Part, @Header("Authorization") authorization: String): Observable<Long>
 
     companion object geoPhotoApi {
-        private const val URL = "http://195.181.223.56:8080/SIM/"
+        const val URL = "http://195.181.223.56:8080/SIM/"
         //private const val URL = "http://192.168.1.4:8080/"
 
         fun create(): GeoPhotoEndpoints {

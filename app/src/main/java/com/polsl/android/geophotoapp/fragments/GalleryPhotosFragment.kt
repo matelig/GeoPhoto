@@ -12,26 +12,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.Services.networking.PhotoNetworking
-import com.polsl.android.geophotoapp.Services.networking.PhotoNetworkingDelegate
-import com.polsl.android.geophotoapp.Services.networking.UserNetworking
-import com.polsl.android.geophotoapp.Services.networking.UserNetworkingDelegate
+import com.polsl.android.geophotoapp.Services.networking.UploadPhotoNetworkingDelegate
 import com.polsl.android.geophotoapp.adapter.GalleryImageRvAdapter
 import com.polsl.android.geophotoapp.model.Photo
 import com.polsl.android.geophotoapp.model.SelectablePhotoModel
-import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
-import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_gallery_photos.*
-import okhttp3.Credentials
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import java.io.File
 
 
-class GalleryPhotosFragment : Fragment(), PhotoNetworkingDelegate {
+class GalleryPhotosFragment : Fragment(), UploadPhotoNetworkingDelegate {
 
     private lateinit var photos: List<String>
     var adapter: GalleryImageRvAdapter? = null
@@ -43,7 +33,7 @@ class GalleryPhotosFragment : Fragment(), PhotoNetworkingDelegate {
         super.onViewCreated(view, savedInstanceState)
         photos = getImagePaths(context)
         networking = PhotoNetworking(context)
-        networking?.delegate = this
+        networking?.delegateUpload = this
         preparePhotosAdapter()
         setupItemClick()
         prepareUploadButton()

@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.polsl.android.geophotoapp.R
+import com.polsl.android.geophotoapp.Services.networking.FetchPhotoNetworkingDelegate
+import com.polsl.android.geophotoapp.Services.networking.PhotoNetworking
 import com.polsl.android.geophotoapp.activity.EditExifActivity
 import com.polsl.android.geophotoapp.activity.FilterActivity
 import com.polsl.android.geophotoapp.activity.TabbedActivity
@@ -17,13 +19,16 @@ import com.polsl.android.geophotoapp.adapter.ImageRvAdapter
 import com.polsl.android.geophotoapp.model.Photo
 import com.polsl.android.geophotoapp.model.PhotoFilter
 import com.polsl.android.geophotoapp.model.SelectablePhotoModel
+import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_photo_list.*
 
 /**
  * Created by alachman on 29.04.2018.
  */
-class PhotoListFragment : Fragment() {
+class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
+
+    private var networking: PhotoNetworking? = null
 
     //todo message when there is no internet
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -31,8 +36,11 @@ class PhotoListFragment : Fragment() {
         return rootView
     }
 
+
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        networking = PhotoNetworking(context)
+        networking?.delegateFetch = this
         getPhotos()
         prepareDownloadButton()
         setUpFiltersObservable()
@@ -67,17 +75,14 @@ class PhotoListFragment : Fragment() {
     private var subscribe: Disposable? = null
 
     private fun getPhotos() {
-        //todo get photos list from server
-        photos = getPhotosList()
-        preparePhotosAdapter()
-        setupItemClick()
+        networking?.getPhotosId()
     }
 
     private fun preparePhotosAdapter() {
         adapter = ImageRvAdapter(activity)
         photosRv.layoutManager = GridLayoutManager(activity, 4)
         adapter!!.items = getSelectablePhotos() as ArrayList<Any>
-        adapter!!.getItemClickObservable().subscribe({ t ->
+        adapter!!.selectedItemsObservable.subscribe({ t ->
             if (t as Int > 0) {
                 selectedPhotoLayout.visibility = View.VISIBLE
                 selectedPhotosTv.text = getString(R.string.selected_photos, t)
@@ -94,10 +99,21 @@ class PhotoListFragment : Fragment() {
         return selectablePhotos
     }
 
-    private fun getPhotosList(): List<Photo> {
+    override fun acquired(photosId: List<Long>) {
+        photos = getPhotosList(photosId)
+        preparePhotosAdapter()
+        setupItemClick()
+    }
+
+    override fun error(error: Throwable) {
+
+    }
+
+
+    private fun getPhotosList(ids: List<Long>): List<Photo> {
         var photos = ArrayList<Photo>()
-        for (i in 0..200)
-            photos.add(Photo("https://picsum.photos/200/?image=" + i))
+        for (i in ids)
+            photos.add(Photo(GeoPhotoEndpoints.geoPhotoApi.URL + "miniature?photoId=" + i))
         return photos
     }
 

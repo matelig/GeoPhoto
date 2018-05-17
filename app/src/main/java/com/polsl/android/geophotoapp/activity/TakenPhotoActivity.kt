@@ -11,7 +11,6 @@ import android.support.design.widget.Snackbar
 import android.support.media.ExifInterface
 import android.support.v7.app.AlertDialog
 import android.util.Log
-import android.widget.Toast
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -23,14 +22,14 @@ import com.polsl.android.geophotoapp.Services.LocationProviderDelegate
 import com.polsl.android.geophotoapp.util.Exif
 import com.polsl.android.geophotoapp.dialog.ProgressDialog
 import com.polsl.android.geophotoapp.Services.networking.PhotoNetworking
-import com.polsl.android.geophotoapp.Services.networking.PhotoNetworkingDelegate
+import com.polsl.android.geophotoapp.Services.networking.UploadPhotoNetworkingDelegate
 import kotlinx.android.synthetic.main.activity_taken_photo.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
 
-class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate, PhotoNetworkingDelegate {
+class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate, UploadPhotoNetworkingDelegate {
 
     var photoUri: String? = null
     var photoPath: String? = null
@@ -41,7 +40,7 @@ class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate, PhotoNetwor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_taken_photo)
-        networking.delegate = this
+        networking.delegateUpload = this
         photoUri = intent.getStringExtra("photoUrl")
         progressDialog.isCancelable = false
         setupButtonsAction()
