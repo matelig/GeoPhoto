@@ -2,6 +2,7 @@ package com.polsl.android.geophotoapp.rest
 
 import com.polsl.android.geophotoapp.rest.restResponse.LoginResponse
 import com.polsl.android.geophotoapp.model.UserData
+import com.polsl.android.geophotoapp.rest.restBody.EditExifRequestBody
 import com.polsl.android.geophotoapp.rest.restResponse.ExifParams
 import io.reactivex.Observable
 import okhttp3.MultipartBody
@@ -19,8 +20,11 @@ interface GeoPhotoEndpoints {
     @POST("login")
     fun login(@Body userData: UserData): Call<LoginResponse>
 
-    @POST("login")
+    @POST("getParams")
     fun exifParams(@Body photoId: Long, @Header("Authorization") authorization: String): Call<ExifParams>
+
+    @POST("uploadParams")
+    fun updateExifParams(@Body exifBody: EditExifRequestBody, @Header("Authorization") authorization: String): Observable<ResponseBody>
 
     @POST("registerUser")
     fun register(@Body userData: UserData): Observable<ResponseBody>
@@ -33,8 +37,8 @@ interface GeoPhotoEndpoints {
     fun upoladPhoto(@Part photo: MultipartBody.Part, @Header("Authorization") authorization: String): Observable<Long>
 
     companion object geoPhotoApi {
-        const val URL = "http://195.181.223.56:8080/SIM/"
-        //private const val URL = "http://192.168.1.4:8080/"
+        //const val URL = "http://195.181.223.56:8080/SIM/"
+        val URL = "http://192.168.1.2:8080/"
 
         fun create(): GeoPhotoEndpoints {
             val builder = OkHttpClient.Builder()

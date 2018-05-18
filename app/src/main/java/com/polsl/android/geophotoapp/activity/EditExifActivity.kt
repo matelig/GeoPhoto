@@ -58,6 +58,14 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
             mapDialog.setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Light_Panel)
             mapDialog.show(supportFragmentManager,"mapFragment")
         }
+
+        applyExifChanges.setOnClickListener {
+            exifParams?.let { params ->
+                networking.updateExifParams(params, photoId)
+            } ?:
+                    displayToast("Error while sending exif params")
+
+        }
     }
 
     private fun setupPhotoImage() {
@@ -84,14 +92,18 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
         error?.let {
             displayToast(it)
         }
-        exifParams = ExifParams()
-        exifParams?.latitude = 50.425
-        exifParams?.longitude = 13.253
+        finish()
     }
 
     override fun success(params: ExifParams) {
         this.exifParams = params
     }
+
+    override fun uploadSuccessful() {
+        displayToast("Exif params successfully uploaded")
+        finish()
+    }
+
 
 }
 

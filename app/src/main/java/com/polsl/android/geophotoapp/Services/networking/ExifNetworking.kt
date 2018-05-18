@@ -2,9 +2,11 @@ package com.polsl.android.geophotoapp.Services.networking
 
 import android.content.Context
 import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
+import com.polsl.android.geophotoapp.rest.restBody.EditExifRequestBody
 import com.polsl.android.geophotoapp.rest.restResponse.ExifParams
-import com.polsl.android.geophotoapp.rest.restResponse.LoginResponse
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -12,6 +14,7 @@ import retrofit2.Response
 interface ExifNetworkingDelegate {
     fun error(error: String?)
     fun success(params: ExifParams)
+    fun uploadSuccessful()
 }
 
 class ExifNetworking(var context: Context) {
@@ -37,7 +40,15 @@ class ExifNetworking(var context: Context) {
         }))
     }
 
-    fun updateExifParams(params: ExifParams) {
-        //TODO: post data to server
+    fun updateExifParams(params: ExifParams, photoId: Long) {
+        var exifRequest = EditExifRequestBody(params, photoId)
+        apiService.updateExifParams(exifRequest, sharedPrefs.getAccessToken()!!)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe({ result ->
+                    delegate?.uploadSuccessful()
+                }, { error ->
+                    delegate?.error("Error while uploading changes")
+                })
     }
 }
