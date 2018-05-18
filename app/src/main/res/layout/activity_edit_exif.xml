@@ -45,6 +45,12 @@
                     android:textSize="50dp"
                     android:text="atrybuty exif @czorny"/>
             </LinearLayout>
+            <com.rey.material.widget.Button
+                android:layout_gravity="center"
+                android:id="@+id/applyExifChanges"
+                style="@style/BlueRoundButton"
+                android:layout_marginTop="@dimen/margin_normal"
+                android:text="@string/update_photo_exif_params" />
         </LinearLayout>
 
     </ScrollView>
