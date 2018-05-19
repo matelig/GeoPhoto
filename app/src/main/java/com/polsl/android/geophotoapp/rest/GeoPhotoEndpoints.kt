@@ -37,8 +37,8 @@ interface GeoPhotoEndpoints {
     fun upoladPhoto(@Part photo: MultipartBody.Part, @Header("Authorization") authorization: String): Observable<Long>
 
     companion object geoPhotoApi {
-        //const val URL = "http://195.181.223.56:8080/SIM/"
-        val URL = "http://192.168.1.2:8080/"
+        const val URL = "http://195.181.223.56:8080/SIM/"
+        //val URL = "http://192.168.1.2:8080/"
 
         fun create(): GeoPhotoEndpoints {
             val builder = OkHttpClient.Builder()
