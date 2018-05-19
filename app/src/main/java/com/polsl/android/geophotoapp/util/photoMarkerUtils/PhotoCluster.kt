@@ -1,16 +1,15 @@
-package com.polsl.android.geophotoapp.model
+package com.polsl.android.geophotoapp.util.photoMarkerUtils
 
-import android.media.Image
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 
-class PhotoCluster(var name: String, var latLng: LatLng): ClusterItem {
+class PhotoCluster(var id: String, var latLng: LatLng): ClusterItem {
     override fun getSnippet(): String? {
         return null
     }
 
     override fun getTitle(): String? {
-        return null
+        return id
     }
 
     override fun getPosition(): LatLng {
