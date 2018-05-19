@@ -1,54 +1,204 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.EditExifActivity"
     android:background="@color/cardview_light_background"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".activity.EditExifActivity">
+
     <TextView
-        android:layout_width="wrap_content"
-        android:gravity="center"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:text="@string/edit_exif"/>
+        android:gravity="center"
+        android:text="@string/edit_exif"
+        android:textSize="30sp" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/activity_vertical_margin">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <ImageView
                 android:id="@+id/photoPreview"
-                android:layout_gravity="center"
-                android:src="@drawable/no_photo"
                 android:layout_width="300dp"
-                android:layout_height="220dp" />
+                android:layout_height="220dp"
+                android:layout_gravity="center"
+                android:src="@drawable/no_photo" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin">
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical">
+
                 <com.rey.material.widget.Button
-                    android:layout_gravity="center"
                     android:id="@+id/locationButton"
                     style="@style/BlueRoundButton"
+                    android:layout_gravity="center"
                     android:layout_marginTop="@dimen/margin_normal"
                     android:text="@string/exif_location" />
-                <TextView
-                    android:layout_width="wrap_content"
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="50dp"
-                    android:text="atrybuty exif @czorny"/>
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/activity_vertical_margin"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="@string/latitude_text"
+                            android:textSize="@dimen/mediumTextSize"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/latitudeTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:maxLength="7"
+                            android:text="50.123"
+                            android:textSize="@dimen/mediumTextSize" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/activity_vertical_margin"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="@string/longitude_text"
+                            android:textSize="@dimen/mediumTextSize"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/longitudeTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:maxLength="7"
+                            android:text="50.123"
+                            android:textSize="@dimen/mediumTextSize" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:labelFor="@id/modelEdit"
+                        android:text="@string/camera_model_label"
+                        android:textSize="@dimen/mediumTextSize" />
+
+                    <EditText
+                        android:id="@+id/modelEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/activity_vertical_margin"
+                        android:inputType="text" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:labelFor="@id/focalLengthEdit"
+                        android:text="@string/focal_length_label"
+                        android:textSize="@dimen/mediumTextSize" />
+
+                    <EditText
+                        android:id="@+id/focalLengthEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/activity_vertical_margin"
+                        android:inputType="text" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:labelFor="@id/apertureEdit"
+                        android:text="@string/aperture_label"
+                        android:textSize="@dimen/mediumTextSize" />
+
+                    <EditText
+                        android:id="@+id/apertureEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/activity_vertical_margin"
+                        android:inputType="text" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:labelFor="@id/exposureEdit"
+                        android:text="@string/exposure_label"
+                        android:textSize="@dimen/mediumTextSize" />
+
+                    <EditText
+                        android:id="@+id/exposureEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/activity_vertical_margin"
+                        android:inputType="text" />
+
+                </LinearLayout>
             </LinearLayout>
+
             <com.rey.material.widget.Button
-                android:layout_gravity="center"
                 android:id="@+id/applyExifChanges"
                 style="@style/BlueRoundButton"
+                android:layout_gravity="center"
                 android:layout_marginTop="@dimen/margin_normal"
                 android:text="@string/update_photo_exif_params" />
         </LinearLayout>

@@ -1,9 +1,9 @@
 package com.polsl.android.geophotoapp.rest
 
-import com.polsl.android.geophotoapp.rest.restResponse.LoginResponse
 import com.polsl.android.geophotoapp.model.UserData
 import com.polsl.android.geophotoapp.rest.restBody.EditExifRequestBody
 import com.polsl.android.geophotoapp.rest.restResponse.ExifParams
+import com.polsl.android.geophotoapp.rest.restResponse.LoginResponse
 import io.reactivex.Observable
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -38,7 +38,7 @@ interface GeoPhotoEndpoints {
 
     companion object geoPhotoApi {
         //const val URL = "http://195.181.223.56:8080/SIM/"
-        val URL = "http://192.168.1.2:8080/"
+        val URL = "http://192.168.0.104:8080/"
 
         fun create(): GeoPhotoEndpoints {
             val builder = OkHttpClient.Builder()

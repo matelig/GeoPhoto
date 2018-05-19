@@ -31,7 +31,7 @@
     <string name="action_logout">Logout</string>
     <string name="logout">You are logged out</string>
     <string name="selected_photos">Selected %d photos</string>
-    <string name="edit_exif">Edit exif attributes of selected photo</string>
+    <string name="edit_exif">Edit exif attributes</string>
     <string name="exif_location">Set up photo location</string>
     <string name="ok">OK</string>
     <string name="cancel">CANCEL</string>
@@ -48,4 +48,10 @@
     <string name="reset">Reset</string>
     <string name="upload_photos">Upload photos</string>
     <string name="update_photo_exif_params">Update photo EXIF params</string>
+    <string name="latitude_text">Latitude:</string>
+    <string name="longitude_text">Longitude:</string>
+    <string name="camera_model_label">Camera model:</string>
+    <string name="focal_length_label">Focal length:</string>
+    <string name="aperture_label">Aperture:</string>
+    <string name="exposure_label">Exposure:</string>
 </resources>
