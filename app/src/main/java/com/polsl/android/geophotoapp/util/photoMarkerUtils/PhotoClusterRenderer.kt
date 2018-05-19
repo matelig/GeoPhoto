@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
@@ -20,6 +21,10 @@ import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_edit_exif.*
 import okhttp3.OkHttpClient
+import android.R.attr.data
+import android.graphics.BitmapFactory
+
+
 
 class PhotoClusterRenderer(var context: Context, var gMap: GoogleMap, var clusterManager: ClusterManager<PhotoCluster>, var layoutInflater: LayoutInflater): DefaultClusterRenderer<PhotoCluster>(context, gMap, clusterManager) {
 
@@ -36,20 +41,22 @@ class PhotoClusterRenderer(var context: Context, var gMap: GoogleMap, var cluste
 
     override fun onBeforeClusterItemRendered(item: PhotoCluster, markerOptions: MarkerOptions?) {
         iconGenerator.setContentView(markerLayout)
-        val photoUrl = GeoPhotoEndpoints.URL + "miniature?photoId=" + item.id
-        val client = OkHttpClient.Builder()
-                .addInterceptor { chain ->
-                    val newRequest = chain.request().newBuilder()
-                            .addHeader("Authorization", UserDataSharedPrefsHelper(context).getAccessToken()!!)
-                            .build()
-                    chain.proceed(newRequest)
-                }
-                .build()
-        val picasso = Picasso.Builder(context).downloader(OkHttp3Downloader(client)).build()
-        picasso.load(photoUrl)
-                .placeholder(R.drawable.no_photo)
-                .into(mImageView)
-        //mImageView.setImageResource(R.drawable.location)
+//        val photoUrl = GeoPhotoEndpoints.URL + "miniature?photoId=" + item.id
+//        val client = OkHttpClient.Builder()
+//                .addInterceptor { chain ->
+//                    val newRequest = chain.request().newBuilder()
+//                            .addHeader("Authorization", UserDataSharedPrefsHelper(context).getAccessToken()!!)
+//                            .build()
+//                    chain.proceed(newRequest)
+//                }
+//                .build()
+//        val picasso = Picasso.Builder(context).downloader(OkHttp3Downloader(client)).build()
+//        picasso.load(photoUrl)
+//                .placeholder(R.drawable.no_photo)
+//                .into(mImageView)
+//        //mImageView.setImageResource(R.drawable.location)
+        val bitmap = BitmapFactory.decodeByteArray(item.miniature, 0, item.miniature!!.size)
+        mImageView.setImageBitmap(bitmap)
         var icon = iconGenerator.makeIcon()
         markerOptions?.icon(BitmapDescriptorFactory.fromBitmap(icon))?.title(item.id)
     }

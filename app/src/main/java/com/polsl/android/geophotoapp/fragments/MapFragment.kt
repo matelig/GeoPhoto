@@ -12,15 +12,19 @@ import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.util.photoMarkerUtils.PhotoCluster
 import com.polsl.android.geophotoapp.util.photoMarkerUtils.PhotoClusterRenderer
 import android.widget.Toast
-import com.polsl.android.geophotoapp.util.photoMarkerUtils.PhotoMarkerViewAdapter
+import com.polsl.android.geophotoapp.Services.networking.PhotoLocationNetworking
+import com.polsl.android.geophotoapp.Services.networking.PhotoLocationNetworkingDelegate
+import com.polsl.android.geophotoapp.rest.restResponse.PhotoLocation
 
 
-class MapFragment : Fragment(), OnMapReadyCallback {
+class MapFragment : Fragment(), OnMapReadyCallback, PhotoLocationNetworkingDelegate {
 
     var locations = prepareLocation()
     var gMap: GoogleMap? = null
-
+    var photoClusters = listOf<PhotoCluster>()
     var clusterManager: ClusterManager<PhotoCluster>? = null
+    var photoNetworking: PhotoLocationNetworking? = null
+    var savedInstanceState: Bundle? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -32,14 +36,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        var mMapView: SupportMapFragment
-        MapsInitializer.initialize(context)
+        photoNetworking = PhotoLocationNetworking(context)
+        photoNetworking?.delegate = this
+        photoNetworking?.fetchPhotoWithLocation()
+        this.savedInstanceState = savedInstanceState
 
-        mMapView = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+    }
+
+    fun getMapsAsync() {
+        var mMapView: SupportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        MapsInitializer.initialize(context)
         mMapView.onCreate(savedInstanceState)
         mMapView.onResume()
         mMapView.getMapAsync(this)
-
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
@@ -52,9 +61,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         googleMap?.setOnCameraIdleListener(clusterManager)
 
-        for (loca in locations) {
-            clusterManager?.addItem(PhotoCluster("2", loca))
-        }
+        clusterManager?.addItems(photoClusters)
 
         clusterManager?.cluster()
 
@@ -89,4 +96,24 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         return location
     }
+
+    override fun success(list: List<PhotoLocation>) {
+        var locations = list
+        for (photo in list) {
+            photo.latitude?.let {latitude ->
+                photo.longitude?.let { longitude->
+                    var cluster = PhotoCluster(photo.photoId.toString(), LatLng(latitude, longitude), photo.miniature.toByteArray())
+                    photoClusters += cluster
+                }
+            }
+        }
+        getMapsAsync()
+    }
+
+    override fun error(error: String?) {
+        print("error")
+        getMapsAsync()
+    }
+
+
 }

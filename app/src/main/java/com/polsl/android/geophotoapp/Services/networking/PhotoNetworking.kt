@@ -2,12 +2,17 @@ package com.polsl.android.geophotoapp.Services.networking
 
 import android.content.Context
 import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
+import com.polsl.android.geophotoapp.rest.restResponse.ExifParams
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 
 interface UploadPhotoNetworkingDelegate {
@@ -20,10 +25,15 @@ interface FetchPhotoNetworkingDelegate {
     fun error(error: Throwable)
 }
 
+//interface PhotoMiniatureNetworkingDelegate {
+//    fun acquired(photoId: Long, photo: ByteArray)
+//}
 class PhotoNetworking(var context: Context) {
 
     var delegateUpload: UploadPhotoNetworkingDelegate? = null
     var delegateFetch: FetchPhotoNetworkingDelegate? = null
+    //var delegateMiniature: PhotoMiniatureNetworkingDelegate? = null
+
     private val apiService = GeoPhotoEndpoints.create()
     private val sharedPrefs = UserDataSharedPrefsHelper(context)
 
@@ -52,4 +62,21 @@ class PhotoNetworking(var context: Context) {
                     delegateFetch?.error(error)
                 })
     }
+
+//    fun getPhotoMiniature(photoId: Long) {
+//        var call = apiService.getMiniature(photoId, sharedPrefs.getAccessToken()!!)
+//        call.enqueue((object : Callback<ResponseBody> {
+//            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
+//                print("fail")
+//            }
+//
+//            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
+//                response?.body()?.let {
+//                    delegateMiniature?.acquired(photoId, it.byteStream().readBytes())
+//                }
+//
+//            }
+//
+//        }))
+//    }
 }
