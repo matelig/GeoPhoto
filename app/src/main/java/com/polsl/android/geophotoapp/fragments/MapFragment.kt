@@ -2,6 +2,7 @@ package com.polsl.android.geophotoapp.fragments
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +20,6 @@ import com.polsl.android.geophotoapp.rest.restResponse.PhotoLocation
 
 class MapFragment : Fragment(), OnMapReadyCallback, PhotoLocationNetworkingDelegate {
 
-    var locations = prepareLocation()
     var gMap: GoogleMap? = null
     var photoClusters = listOf<PhotoCluster>()
     var clusterManager: ClusterManager<PhotoCluster>? = null
@@ -39,6 +39,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PhotoLocationNetworkingDeleg
         photoNetworking = PhotoLocationNetworking(context)
         photoNetworking?.delegate = this
         photoNetworking?.fetchPhotoWithLocation()
+        photoClusters = listOf()
         this.savedInstanceState = savedInstanceState
 
     }
@@ -54,22 +55,13 @@ class MapFragment : Fragment(), OnMapReadyCallback, PhotoLocationNetworkingDeleg
     override fun onMapReady(googleMap: GoogleMap?) {
         gMap = googleMap
         clusterManager = ClusterManager(context, gMap!!)
-
         var clusterRenderer = PhotoClusterRenderer(context, gMap!!, clusterManager!!, LayoutInflater.from(context))
-
         clusterManager?.renderer = clusterRenderer
-
         googleMap?.setOnCameraIdleListener(clusterManager)
-
         clusterManager?.addItems(photoClusters)
-
         clusterManager?.cluster()
-
-        //clusterManager?.markerCollection?.setOnInfoWindowAdapter(PhotoMarkerViewAdapter(LayoutInflater.from(context)))
-
         clusterManager?.setOnClusterClickListener({
             Toast.makeText(context, "Cluster click", Toast.LENGTH_SHORT).show()
-            // if true, do not move camera
             false
         })
 
@@ -77,32 +69,22 @@ class MapFragment : Fragment(), OnMapReadyCallback, PhotoLocationNetworkingDeleg
                 {
                     Toast.makeText(context, "Cluster item click", Toast.LENGTH_SHORT).show()
 
-                    // if true, click handling stops here and do not show info view, do not move camera
-                    // you can avoid this by calling:
-                    // renderer.getMarker(clusterItem).showInfoWindow();
-
                     false
                 })
         gMap?.setOnMarkerClickListener(clusterManager)
-        //gMap?.setInfoWindowAdapter(clusterManager?.markerManager)
     }
 
-    fun prepareLocation(): List<LatLng> {
-        var location = listOf<LatLng>()
-        for (i in 0..9) {
-            val latLng = LatLng((-34 + i).toDouble(), (151 + i).toDouble())
-            location += latLng
-        }
-
-        return location
+    override fun onDestroyView() {
+        super.onDestroyView()
+        gMap?.clear()
+        photoClusters
     }
 
     override fun success(list: List<PhotoLocation>) {
-        var locations = list
         for (photo in list) {
             photo.latitude?.let {latitude ->
                 photo.longitude?.let { longitude->
-                    var cluster = PhotoCluster(photo.photoId.toString(), LatLng(latitude, longitude), photo.miniature.toByteArray())
+                    var cluster = PhotoCluster(photo.photoId.toString(), LatLng(latitude, longitude), Base64.decode(photo.miniature, Base64.DEFAULT))
                     photoClusters += cluster
                 }
             }
