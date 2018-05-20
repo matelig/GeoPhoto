@@ -1,101 +1,101 @@
 package com.polsl.android.geophotoapp.fragments
 
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.clustering.ClusterManager
 import com.polsl.android.geophotoapp.R
-import com.polsl.android.geophotoapp.activity.TabbedActivity
-import kotlinx.android.synthetic.main.fragment_make_photo.*
+import com.polsl.android.geophotoapp.util.photoMarkerUtils.PhotoCluster
+import com.polsl.android.geophotoapp.util.photoMarkerUtils.PhotoClusterRenderer
+import android.widget.Toast
+import com.polsl.android.geophotoapp.Services.networking.PhotoLocationNetworking
+import com.polsl.android.geophotoapp.Services.networking.PhotoLocationNetworkingDelegate
+import com.polsl.android.geophotoapp.rest.restResponse.PhotoLocation
 
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val LATITUDE = "latitude"
-private const val LONGITUDE = "longitude"
+class MapFragment : Fragment(), OnMapReadyCallback, PhotoLocationNetworkingDelegate {
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [MapFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [MapFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
-class MapFragment : Fragment(), OnMapReadyCallback {
-
-    // TODO: Rename and change types of parameters
-    private var latitude: Double? = null
-    private var longitude: Double? = null
-    //private var listener: OnFragmentInteractionListener? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            latitude = it.getDouble(LATITUDE)
-            longitude = it.getDouble(LONGITUDE)
-        }
-    }
+    var gMap: GoogleMap? = null
+    var photoClusters = listOf<PhotoCluster>()
+    var clusterManager: ClusterManager<PhotoCluster>? = null
+    var photoNetworking: PhotoLocationNetworking? = null
+    var savedInstanceState: Bundle? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
         var rootView = inflater.inflate(
                 R.layout.fragment_map, container, false)
-        // rootView.findViewById(R.id.map) as SupportMapFragment
-        //mapFragment.getMapAsync(this)
 
         return rootView
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        photoNetworking = PhotoLocationNetworking(context)
+        photoNetworking?.delegate = this
+        photoNetworking?.fetchPhotoWithLocation()
+        photoClusters = listOf()
+        this.savedInstanceState = savedInstanceState
+
+    }
+
+    fun getMapsAsync() {
+        var mMapView: SupportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        MapsInitializer.initialize(context)
+        mMapView.onCreate(savedInstanceState)
+        mMapView.onResume()
+        mMapView.getMapAsync(this)
+    }
+
     override fun onMapReady(googleMap: GoogleMap?) {
-        val actualLocation = LatLng(latitude!!, longitude!!)
-        googleMap?.addMarker(MarkerOptions().position(actualLocation)
-                .title("Your location"))
-        googleMap?.moveCamera(CameraUpdateFactory.newLatLng(actualLocation))
+        gMap = googleMap
+        clusterManager = ClusterManager(context, gMap!!)
+        var clusterRenderer = PhotoClusterRenderer(context, gMap!!, clusterManager!!, LayoutInflater.from(context))
+        clusterManager?.renderer = clusterRenderer
+        googleMap?.setOnCameraIdleListener(clusterManager)
+        clusterManager?.addItems(photoClusters)
+        clusterManager?.cluster()
+        clusterManager?.setOnClusterClickListener({
+            Toast.makeText(context, "Cluster click", Toast.LENGTH_SHORT).show()
+            false
+        })
+
+        clusterManager?.setOnClusterItemClickListener(
+                {
+                    Toast.makeText(context, "Cluster item click", Toast.LENGTH_SHORT).show()
+
+                    false
+                })
+        gMap?.setOnMarkerClickListener(clusterManager)
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        gMap?.clear()
+        photoClusters
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param latitude
-         * @param longitude
-         * @return A new instance of fragment MapFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(latitude: Double, longitude: Double): MapFragment =
-                MapFragment().apply {
-                    arguments = Bundle().apply {
-                        putDouble(LATITUDE, latitude)
-                        putDouble(LONGITUDE, longitude)
-                    }
+    override fun success(list: List<PhotoLocation>) {
+        for (photo in list) {
+            photo.latitude?.let {latitude ->
+                photo.longitude?.let { longitude->
+                    var cluster = PhotoCluster(photo.photoId.toString(), LatLng(latitude, longitude), Base64.decode(photo.miniature, Base64.DEFAULT))
+                    photoClusters += cluster
                 }
+            }
+        }
+        getMapsAsync()
     }
+
+    override fun error(error: String?) {
+        print("error")
+        getMapsAsync()
+    }
+
+
 }
