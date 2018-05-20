@@ -2,20 +2,19 @@ package com.polsl.android.geophotoapp.activity
 
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
-import com.polsl.android.geophotoapp.R
-import com.polsl.android.geophotoapp.dialog.MapDialog
-import com.polsl.android.geophotoapp.dialog.MapDialogDelegate
-import kotlinx.android.synthetic.main.activity_edit_exif.*
+import android.widget.TextView
 import com.google.android.gms.maps.model.LatLng
+import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.Services.networking.ExifNetworking
 import com.polsl.android.geophotoapp.Services.networking.ExifNetworkingDelegate
-import com.polsl.android.geophotoapp.model.SelectablePhotoModel
+import com.polsl.android.geophotoapp.dialog.MapDialog
+import com.polsl.android.geophotoapp.dialog.MapDialogDelegate
 import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
 import com.polsl.android.geophotoapp.rest.restResponse.ExifParams
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
-import com.polsl.android.geophotoapp.viewholder.PhotoViewHolder
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_edit_exif.*
 import okhttp3.OkHttpClient
 
 
@@ -35,17 +34,29 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
         setupButtonsAction()
         setupPhotoImage()
         fetchExifParams()
+        fillEditTexts()
     }
 
     override fun onOkButtonClick(location: LatLng) {
         //TODO: store this property in photo exif
         this.exifParams?.latitude = location.latitude
         this.exifParams?.longitude = location.longitude
+        latitudeTv.text = location.latitude.toString()
+        longitudeTv.text = location.longitude.toString()
         displayToast("OK clicked")
     }
 
     override fun onCancelButtonClick() {
         displayToast("Cancel clicked")
+    }
+
+    private fun fillEditTexts() {
+        modelEdit.setText(exifParams?.cameraName, TextView.BufferType.EDITABLE)
+        focalLengthEdit.setText(exifParams?.focalLength, TextView.BufferType.EDITABLE)
+        apertureEdit.setText(exifParams?.maxAperture, TextView.BufferType.EDITABLE)
+        exposureEdit.setText(exifParams?.exposure, TextView.BufferType.EDITABLE)
+        latitudeTv.text = exifParams?.latitude.toString()
+        longitudeTv.text = exifParams?.longitude.toString()
     }
 
     private fun setupButtonsAction() {
@@ -60,10 +71,13 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
         }
 
         applyExifChanges.setOnClickListener {
+            exifParams?.cameraName = modelEdit.text.toString()
+            exifParams?.focalLength = focalLengthEdit.text.toString()
+            exifParams?.maxAperture = apertureEdit.text.toString()
+            exifParams?.exposure = exposureEdit.text.toString()
             exifParams?.let { params ->
                 networking.updateExifParams(params, photoId)
-            } ?:
-                    displayToast("Error while sending exif params")
+            } ?: displayToast("Error while sending exif params")
 
         }
     }

@@ -3,7 +3,6 @@ package com.polsl.android.geophotoapp.fragments
 import android.content.Context
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.media.ExifInterface
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
@@ -40,7 +39,7 @@ class GalleryPhotosFragment : Fragment(), UploadPhotoNetworkingDelegate {
     }
 
     private fun prepareUploadButton() {
-        uploadPhotosButton.setOnClickListener(View.OnClickListener {
+        uploadPhotosButton.setOnClickListener({
             uploadSelectedPhotos()
         })
     }
@@ -81,9 +80,9 @@ class GalleryPhotosFragment : Fragment(), UploadPhotoNetworkingDelegate {
                     var photoModel = it as? SelectablePhotoModel
                     photoModel?.photo?.let {
                         //Toast.makeText(this.context, "Clicked on ${it.url}", Toast.LENGTH_LONG).show()
-                        var imageExif = ExifInterface(it.url)
-                        var location = imageExif.latLong
-                        Toast.makeText(context, "Latitude ${location?.get(0)}, longitude ${location?.get(1)}", Toast.LENGTH_SHORT).show()
+                        //var imageExif = ExifInterface(it.url)
+                        //var location = imageExif.latLong
+                        //Toast.makeText(context, "Latitude ${location?.get(0)}, longitude ${location?.get(1)}", Toast.LENGTH_SHORT).show()
                         //showEditExifActivity(it.url)
                     }
                 })
