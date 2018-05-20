@@ -24,15 +24,10 @@ interface FetchPhotoNetworkingDelegate {
     fun acquired(photosId: List<Long>)
     fun error(error: Throwable)
 }
-
-//interface PhotoMiniatureNetworkingDelegate {
-//    fun acquired(photoId: Long, photo: ByteArray)
-//}
 class PhotoNetworking(var context: Context) {
 
     var delegateUpload: UploadPhotoNetworkingDelegate? = null
     var delegateFetch: FetchPhotoNetworkingDelegate? = null
-    //var delegateMiniature: PhotoMiniatureNetworkingDelegate? = null
 
     private val apiService = GeoPhotoEndpoints.create()
     private val sharedPrefs = UserDataSharedPrefsHelper(context)
@@ -62,21 +57,4 @@ class PhotoNetworking(var context: Context) {
                     delegateFetch?.error(error)
                 })
     }
-
-//    fun getPhotoMiniature(photoId: Long) {
-//        var call = apiService.getMiniature(photoId, sharedPrefs.getAccessToken()!!)
-//        call.enqueue((object : Callback<ResponseBody> {
-//            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
-//                print("fail")
-//            }
-//
-//            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-//                response?.body()?.let {
-//                    delegateMiniature?.acquired(photoId, it.byteStream().readBytes())
-//                }
-//
-//            }
-//
-//        }))
-//    }
 }

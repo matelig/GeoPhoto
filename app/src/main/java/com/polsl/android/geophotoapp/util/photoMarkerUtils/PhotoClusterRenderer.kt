@@ -31,36 +31,20 @@ class PhotoClusterRenderer(var context: Context, var gMap: GoogleMap, var cluste
     private val iconGenerator = IconGenerator(context.applicationContext)
     private val iconClusterGenerator = IconGenerator(context.applicationContext)
     private val mImageView: ImageView
-    private val dimension: Int = 50
     var markerLayout = layoutInflater.inflate(R.layout.marker_window_layout, null)
     init {
-        var padding = 2
         mImageView = markerLayout.findViewById(R.id.markerImage)
 
     }
 
     override fun onBeforeClusterItemRendered(item: PhotoCluster, markerOptions: MarkerOptions?) {
         iconGenerator.setContentView(markerLayout)
-//        val photoUrl = GeoPhotoEndpoints.URL + "miniature?photoId=" + item.id
-//        val client = OkHttpClient.Builder()
-//                .addInterceptor { chain ->
-//                    val newRequest = chain.request().newBuilder()
-//                            .addHeader("Authorization", UserDataSharedPrefsHelper(context).getAccessToken()!!)
-//                            .build()
-//                    chain.proceed(newRequest)
-//                }
-//                .build()
-//        val picasso = Picasso.Builder(context).downloader(OkHttp3Downloader(client)).build()
-//        picasso.load(photoUrl)
-//                .placeholder(R.drawable.no_photo)
-//                .into(mImageView)
-//        //mImageView.setImageResource(R.drawable.location)
         val bitmap = BitmapFactory.decodeByteArray(item.miniature, 0, item.miniature!!.size)
         mImageView.setImageBitmap(bitmap)
         var icon = iconGenerator.makeIcon()
         markerOptions?.icon(BitmapDescriptorFactory.fromBitmap(icon))?.title(item.id)
     }
-//
+
     override fun onBeforeClusterRendered(cluster: Cluster<PhotoCluster>?, markerOptions: MarkerOptions?) {
     iconClusterGenerator.setBackground(ContextCompat.getDrawable(context, R.drawable.cluster_background_circle))
     iconClusterGenerator.setTextAppearance(R.style.AppTheme_WhiteTextAppearance)
