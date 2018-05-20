@@ -1,12 +1,15 @@
 package com.polsl.android.geophotoapp.rest
 
+import com.polsl.android.geophotoapp.model.Photo
 import com.polsl.android.geophotoapp.rest.restResponse.LoginResponse
 import com.polsl.android.geophotoapp.model.UserData
 import com.polsl.android.geophotoapp.rest.restBody.EditExifRequestBody
 import com.polsl.android.geophotoapp.rest.restResponse.ExifParams
+import com.polsl.android.geophotoapp.rest.restResponse.PhotoLocation
 import io.reactivex.Observable
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -14,6 +17,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
+import java.io.File
 
 interface GeoPhotoEndpoints {
 
@@ -29,6 +33,12 @@ interface GeoPhotoEndpoints {
     @POST("registerUser")
     fun register(@Body userData: UserData): Observable<ResponseBody>
 
+    @GET("miniature")
+    fun getMiniature(@Query("photoId") photoId: Long ,@Header("Authorization") authorization: String): Call<ResponseBody>
+
+    @POST("photoLocations")
+    fun photoLocation(@Header("Authorization") authorization: String): Call<List<PhotoLocation>>
+
     @POST("allPhotos")
     fun getPhotoIds(@Header("Authorization") authorization: String): Observable<List<Long>>
 
@@ -37,8 +47,8 @@ interface GeoPhotoEndpoints {
     fun upoladPhoto(@Part photo: MultipartBody.Part, @Header("Authorization") authorization: String): Observable<Long>
 
     companion object geoPhotoApi {
-        //const val URL = "http://195.181.223.56:8080/SIM/"
-        val URL = "http://192.168.1.2:8080/"
+        const val URL = "http://195.181.223.56:8080/SIM/"
+        //const val URL = "http://192.168.1.2:8080/"
 
         fun create(): GeoPhotoEndpoints {
             val builder = OkHttpClient.Builder()

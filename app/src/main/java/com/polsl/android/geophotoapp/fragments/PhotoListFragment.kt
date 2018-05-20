@@ -75,6 +75,7 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
     private var subscribe: Disposable? = null
 
     private fun getPhotos() {
+        //networking?.getPhotoMiniature(2L)
         networking?.getPhotosId()
     }
 
