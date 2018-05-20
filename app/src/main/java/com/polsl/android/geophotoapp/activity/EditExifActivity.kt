@@ -34,7 +34,6 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
         setupButtonsAction()
         setupPhotoImage()
         fetchExifParams()
-        fillEditTexts()
     }
 
     override fun onOkButtonClick(location: LatLng) {
@@ -111,6 +110,7 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
 
     override fun success(params: ExifParams) {
         this.exifParams = params
+        fillEditTexts()
     }
 
     override fun uploadSuccessful() {
