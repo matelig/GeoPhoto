@@ -12,6 +12,7 @@ import android.widget.Toast
 import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.Services.networking.PhotoNetworking
 import com.polsl.android.geophotoapp.Services.networking.UploadPhotoNetworkingDelegate
+import com.polsl.android.geophotoapp.activity.BaseActivity
 import com.polsl.android.geophotoapp.adapter.GalleryImageRvAdapter
 import com.polsl.android.geophotoapp.model.Photo
 import com.polsl.android.geophotoapp.model.SelectablePhotoModel
@@ -46,6 +47,7 @@ class GalleryPhotosFragment : Fragment(), UploadPhotoNetworkingDelegate {
 
     //todo: check if it even works
     private fun uploadSelectedPhotos() {
+        (activity as BaseActivity).showProgressDialog(getString(R.string.wait), getString(R.string.downloading))
         for (photo in adapter!!.items!!) {
             if ((photo as SelectablePhotoModel).isSelected) {
                 networking?.uploadPhoto(File(photo.photo.thumbnailUrl))
@@ -70,7 +72,7 @@ class GalleryPhotosFragment : Fragment(), UploadPhotoNetworkingDelegate {
     private fun getSelectablePhotos(): ArrayList<SelectablePhotoModel>? {
         var selectablePhotos = ArrayList<SelectablePhotoModel>()
         for (photo in photos)
-            selectablePhotos.add(SelectablePhotoModel(Photo(photo,0), false))
+            selectablePhotos.add(SelectablePhotoModel(Photo(photo, 0), false))
         return selectablePhotos
     }
 
@@ -118,13 +120,15 @@ class GalleryPhotosFragment : Fragment(), UploadPhotoNetworkingDelegate {
     }
 
     override fun success() {
-        Toast.makeText(context,"Photo uploaded",Toast.LENGTH_SHORT).show()
+        selectedPhotoLayout.visibility = View.GONE
+        (activity as BaseActivity).hideProgressDialog()
+        Toast.makeText(context, "Photo uploaded", Toast.LENGTH_SHORT).show()
     }
 
     override fun error(error: Throwable) {
+        (activity as BaseActivity).hideProgressDialog()
         error.message?.let {
-            Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
     }
-
 }

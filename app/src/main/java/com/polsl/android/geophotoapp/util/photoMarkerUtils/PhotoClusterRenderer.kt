@@ -24,8 +24,6 @@ import okhttp3.OkHttpClient
 import android.R.attr.data
 import android.graphics.BitmapFactory
 
-
-
 class PhotoClusterRenderer(var context: Context, var gMap: GoogleMap, var clusterManager: ClusterManager<PhotoCluster>, var layoutInflater: LayoutInflater): DefaultClusterRenderer<PhotoCluster>(context, gMap, clusterManager) {
 
     private val iconGenerator = IconGenerator(context.applicationContext)

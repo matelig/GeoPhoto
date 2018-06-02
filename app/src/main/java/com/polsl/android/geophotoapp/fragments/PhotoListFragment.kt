@@ -10,8 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.polsl.android.geophotoapp.R
+import com.polsl.android.geophotoapp.Services.networking.ExifNetworking
 import com.polsl.android.geophotoapp.Services.networking.FetchPhotoNetworkingDelegate
 import com.polsl.android.geophotoapp.Services.networking.PhotoNetworking
+import com.polsl.android.geophotoapp.activity.BaseActivity
 import com.polsl.android.geophotoapp.activity.EditExifActivity
 import com.polsl.android.geophotoapp.activity.FilterActivity
 import com.polsl.android.geophotoapp.activity.TabbedActivity
@@ -20,7 +22,11 @@ import com.polsl.android.geophotoapp.model.Photo
 import com.polsl.android.geophotoapp.model.PhotoFilter
 import com.polsl.android.geophotoapp.model.SelectablePhotoModel
 import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
+import com.polsl.android.geophotoapp.rest.restResponse.ExifParams
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_photo_list.*
 
 /**
@@ -29,6 +35,7 @@ import kotlinx.android.synthetic.main.fragment_photo_list.*
 class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
 
     private var networking: PhotoNetworking? = null
+    private var exifNetworking: ExifNetworking? = null
 
     //todo message when there is no internet
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -36,11 +43,12 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
         return rootView
     }
 
-
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         networking = PhotoNetworking(context)
         networking?.delegateFetch = this
+        exifNetworking = ExifNetworking(context)
+        (activity as BaseActivity).showProgressDialog(getString(R.string.wait), getString(R.string.downloading))
         getPhotos()
         prepareDownloadButton()
         setUpFiltersObservable()
@@ -57,13 +65,14 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
         bundle.putStringArrayList(PhotoFilter.FOCAL_LENGTHS, getFocalLengths())
         bundle.putStringArrayList(PhotoFilter.DEVICES, getDevicesName())
         bundle.putStringArrayList(PhotoFilter.EXPOSURES, getExposures())
+        bundle.putStringArrayList(PhotoFilter.AUTHORS, getAuthors())
         intent.putExtras(bundle)
         startActivityForResult(intent, TabbedActivity.FILTERS_CODE)
     }
 
     private fun prepareDownloadButton() {
 
-        downloadPhotosButton.setOnClickListener(View.OnClickListener {
+        downloadPhotosButton.setOnClickListener({
             //todo
 //            downloadPhotos()
             Toast.makeText(activity, "Photos downloaded", Toast.LENGTH_SHORT).show()
@@ -75,7 +84,6 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
     private var subscribe: Disposable? = null
 
     private fun getPhotos() {
-        //networking?.getPhotoMiniature(2L)
         networking?.getPhotosId()
     }
 
@@ -101,15 +109,48 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
     }
 
     override fun acquired(photosId: List<Long>) {
+        getExifParamsForPhotos(photosId)
         photos = getPhotosList(photosId)
         preparePhotosAdapter()
         setupItemClick()
     }
 
-    override fun error(error: Throwable) {
+    private var savedExifParams: List<ExifParams> = ArrayList()
 
+    private fun getExifParamsForPhotos(photosId: List<Long>) {
+        getExifsForIds(photosId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ exifParams ->
+                    savedExifParams = exifParams
+                    (activity as BaseActivity).hideProgressDialog()
+                }, {
+                    error(it)
+                    (activity as BaseActivity).hideProgressDialog()
+                })
     }
 
+    private fun getExifsForIds(photosId: List<Long>): Observable<List<ExifParams>> {
+        var exifObservables = ArrayList<Observable<ExifParams>>()
+        for (i in 0..photosId.size - 1)
+            exifObservables.add(exifNetworking?.getExifParametersObservable(photosId[i])!!)
+        return exifObservables.observableZip()
+    }
+
+    inline fun <reified T> List<Observable<T>>.observableZip(): Observable<List<T>> =
+            when (isEmpty()) {
+                true -> Observable.just(emptyList())
+                else -> Observable.zip(this) { it.toList() }
+                        .map {
+                            @Suppress("UNCHECKED_CAST")
+                            it as List<T>
+                        }
+            }
+
+    override fun error(error: Throwable) {
+        (activity as BaseActivity).hideProgressDialog()
+        Toast.makeText(activity, error.message, Toast.LENGTH_SHORT).show()
+    }
 
     private fun getPhotosList(ids: List<Long>): List<Photo> {
         var photos = ArrayList<Photo>()
@@ -121,9 +162,8 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
     private fun setupItemClick() {
         subscribe = adapter?.getItemClickObservable()
                 ?.subscribe({
-                    var photoModel = it as? SelectablePhotoModel
+                    val photoModel = it as? SelectablePhotoModel
                     photoModel?.photo?.let {
-                        Toast.makeText(this.context, "Clicked on ${it.url}", Toast.LENGTH_LONG).show()
                         showEditExifActivity(it.photoId)
                     }
                 })
@@ -145,48 +185,31 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
         if (resultCode == Activity.RESULT_OK && requestCode == TabbedActivity.FILTERS_CODE) {
             val photoFilter = data.extras.getSerializable(FilterActivity.FILTER_KEY) as PhotoFilter
             filterPhotos(photoFilter)
-            sortPhotos(photoFilter)
         }
     }
 
-    private fun sortPhotos(photoFilter: PhotoFilter) {
-        //sort photos by date ascending/descending
-    }
-
     private fun filterPhotos(photoFilter: PhotoFilter) {
-      //filter photos 
+        networking?.getFilteredPhotos(photoFilter)
     }
 
-    fun getDevicesName(): ArrayList<String?>? {
-        var test = ArrayList<String?>()
-        test.add("Samsung TM-78")
-        test.add("Xiaomi Red Mi")
-        return test
-        // return photos?.map { photo -> photo.exif?.getAttribute(ExifInterface.TAG_MODEL) }?.toList() as ArrayList<String?>
+    private fun getAuthors(): ArrayList<String?>? {
+        return ArrayList(savedExifParams.filter { exifParams -> exifParams.author != null }.map { exifParams -> exifParams.author }.distinct().toList())
     }
 
-    fun getFocalLengths(): ArrayList<String?>? {
-        var test = ArrayList<String?>()
-        test.add("413/100")
-        test.add("450/100")
-        return test
-        //todo uncomment
-        // return photos?.map { photo -> photo.exif?.getAttribute(ExifInterface.TAG_FOCAL_LENGTH) }?.toList() as ArrayList<String?>
+    private fun getDevicesName(): ArrayList<String?>? {
+        return ArrayList(savedExifParams.filter { exifParams -> exifParams.cameraName != null }.map { exifParams -> exifParams.cameraName }.distinct().toList())
+
     }
 
-    fun getApertures(): ArrayList<String?>? {
-        var test = ArrayList<String?>()
-        test.add("228/100")
-        test.add("230/100")
-        return test
-        // return photos?.map { photo -> photo.exif?.getAttribute(ExifInterface.TAG_APERTURE_VALUE) }?.toList() as ArrayList<String?>
+    private fun getFocalLengths(): ArrayList<String?>? {
+        return ArrayList(savedExifParams.filter { exifParams -> exifParams.focalLength != null }.map { exifParams -> exifParams.focalLength }.distinct().toList())
     }
 
-    fun getExposures(): ArrayList<String?>? {
-        var test = ArrayList<String?>()
-        test.add("0.03")
-        test.add("1")
-        return test
-        //return photos?.map { photo -> photo.exif?.getAttribute(ExifInterface.TAG_EXPOSURE_PROGRAM) }?.toList() as ArrayList<String?>
+    private fun getApertures(): ArrayList<String?>? {
+        return ArrayList(savedExifParams.filter { exifParams -> exifParams.maxAperture != null }.map { exifParams -> exifParams.maxAperture }.distinct().toList())
+    }
+
+    private fun getExposures(): ArrayList<String?>? {
+        return ArrayList(savedExifParams.filter { exifParams -> exifParams.exposure != null }.map { exifParams -> exifParams.exposure }.distinct().toList())
     }
 }

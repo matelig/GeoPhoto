@@ -1,5 +1,6 @@
 package com.polsl.android.geophotoapp.activity
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -67,4 +68,14 @@ abstract class BaseActivity: AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
+    private var progress: ProgressDialog?=null
+
+    fun showProgressDialog(title: String, message: String) {
+        progress = ProgressDialog.show(this, title,
+                message, true);
+    }
+
+    fun hideProgressDialog() {
+        progress?.dismiss()
+    }
 }

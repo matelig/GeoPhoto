@@ -54,6 +54,8 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
         focalLengthEdit.setText(exifParams?.focalLength, TextView.BufferType.EDITABLE)
         apertureEdit.setText(exifParams?.maxAperture, TextView.BufferType.EDITABLE)
         exposureEdit.setText(exifParams?.exposure, TextView.BufferType.EDITABLE)
+        authorEdit.setText(exifParams?.author, TextView.BufferType.EDITABLE)
+        descriptionEdit.setText(exifParams?.description, TextView.BufferType.EDITABLE)
         latitudeTv.text = exifParams?.latitude.toString()
         longitudeTv.text = exifParams?.longitude.toString()
     }
@@ -66,7 +68,7 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
                 }
             }
             mapDialog.setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Light_Panel)
-            mapDialog.show(supportFragmentManager,"mapFragment")
+            mapDialog.show(supportFragmentManager, "mapFragment")
         }
 
         applyExifChanges.setOnClickListener {
@@ -74,6 +76,8 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
             exifParams?.focalLength = focalLengthEdit.text.toString()
             exifParams?.maxAperture = apertureEdit.text.toString()
             exifParams?.exposure = exposureEdit.text.toString()
+            exifParams?.author = authorEdit.text.toString()
+            exifParams?.description = descriptionEdit.text.toString()
             exifParams?.let { params ->
                 networking.updateExifParams(params, photoId)
             } ?: displayToast("Error while sending exif params")
@@ -117,7 +121,6 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
         displayToast("Exif params successfully uploaded")
         finish()
     }
-
 
 }
 

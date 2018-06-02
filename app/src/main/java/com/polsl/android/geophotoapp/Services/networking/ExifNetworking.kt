@@ -15,6 +15,7 @@ interface ExifNetworkingDelegate {
     fun error(error: String?)
     fun success(params: ExifParams)
     fun uploadSuccessful()
+
 }
 
 class ExifNetworking(var context: Context) {
@@ -40,6 +41,8 @@ class ExifNetworking(var context: Context) {
         }))
     }
 
+    fun getExifParametersObservable(photoId: Long) = apiService.getExifParams(photoId, sharedPrefs.getAccessToken()!!)
+
     fun updateExifParams(params: ExifParams, photoId: Long) {
         var exifRequest = EditExifRequestBody(params, photoId)
         apiService.updateExifParams(exifRequest, sharedPrefs.getAccessToken()!!)
@@ -51,4 +54,6 @@ class ExifNetworking(var context: Context) {
                     delegate?.error("Error while uploading changes")
                 })
     }
+
+
 }
