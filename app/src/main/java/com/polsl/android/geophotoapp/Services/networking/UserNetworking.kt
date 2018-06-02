@@ -1,9 +1,10 @@
 package com.polsl.android.geophotoapp.Services.networking
 
 import android.content.Context
-import com.polsl.android.geophotoapp.rest.restResponse.LoginResponse
+import com.google.gson.Gson
 import com.polsl.android.geophotoapp.model.UserData
 import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
+import com.polsl.android.geophotoapp.rest.restResponse.LoginResponse
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -12,7 +13,8 @@ import retrofit2.Callback
 import retrofit2.Response
 
 interface UserNetworkingDelegate {
-    fun success()
+    fun loginSuccess()
+    fun registerSuccess()
     fun error(error: Throwable?)
 }
 
@@ -30,10 +32,13 @@ class UserNetworking(var context: Context) {
             }
 
             override fun onResponse(call: Call<LoginResponse>?, response: Response<LoginResponse>?) {
-                UserDataSharedPrefsHelper(context).saveAccessToken(response?.body()?.token)
-                delegate?.success()
+                if (response != null && response.isSuccessful && response.body()?.token != null) {
+                    UserDataSharedPrefsHelper(context).saveAccessToken(response?.body()?.token)
+                    delegate?.loginSuccess()
+                } else
+                    delegate?.error(
+                            Throwable(Gson().fromJson(response?.errorBody()?.string(), LoginResponse::class.java).message))
             }
-
         }))
     }
 
@@ -44,7 +49,7 @@ class UserNetworking(var context: Context) {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe({ result ->
-                    delegate?.success()
+                    delegate?.registerSuccess()
                 }, { error ->
                     delegate?.error(error)
                 })

@@ -18,6 +18,8 @@ import kotlinx.android.synthetic.main.activity_login.*
  * Created by alachman on 21.04.2018.
  */
 class LoginActivity : BaseActivity(), UserNetworkingDelegate {
+    override fun registerSuccess() {
+    }
 
     val networking = UserNetworking(context = this)
 
@@ -91,7 +93,7 @@ class LoginActivity : BaseActivity(), UserNetworkingDelegate {
         finish()
     }
 
-    override fun success() {
+    override fun loginSuccess() {
         UserDataSharedPrefsHelper(this).saveLoggedUser(UserData(usernameEditText.text.toString(), passwordEditText.text.toString()))
         onLogin()
     }
