@@ -19,12 +19,15 @@ class FilterActivity : BaseActivity() {
     private var apertures: ArrayList<String>? = null
     private var devices: ArrayList<String>? = null
     private var focalLengths: ArrayList<String>? = null
+    private var authors: ArrayList<String>? = null
     private var photoFilter: PhotoFilter = PhotoFilter()
+
 
     private lateinit var aperturesAdapter: FilterItemAdapter
     private lateinit var devicesAdapter: FilterItemAdapter
     private lateinit var focalLengthAdapter: FilterItemAdapter
     private lateinit var exposuresAdapter: FilterItemAdapter
+    private lateinit var authorsAdapter: FilterItemAdapter
 
     companion object {
         const val FILTER_KEY = "filterKey"
@@ -85,6 +88,7 @@ class FilterActivity : BaseActivity() {
         apertures = intent.getStringArrayListExtra(PhotoFilter.APERTURES)
         devices = intent.getStringArrayListExtra(PhotoFilter.DEVICES)
         focalLengths = intent.getStringArrayListExtra(PhotoFilter.FOCAL_LENGTHS)
+        authors = intent.getStringArrayListExtra(PhotoFilter.AUTHORS)
         setUpFilterAdapters()
     }
 
@@ -93,6 +97,21 @@ class FilterActivity : BaseActivity() {
         setUpDevicesAdapter()
         setUpExposuresAdapter()
         setUpFocalLengthsAdapter()
+        setUpAuthorsAdapter()
+    }
+
+    private fun setUpAuthorsAdapter() {
+        authorsAdapter = FilterItemAdapter(this)
+        filterAuthorsRv.layoutManager = GridLayoutManager(this, 4)
+        authorsAdapter.items = getSelectableFilterModels(authors) as ArrayList<Any>
+        authorsAdapter.getItemClickObservable().subscribe({ t ->
+            t as SelectableFilterModel
+            if (t.isSelected)
+                photoFilter.authors.add(t.value)
+            else
+                photoFilter.authors.remove(t.value)
+        })
+        filterAuthorsRv.adapter = authorsAdapter
     }
 
     private fun setUpFocalLengthsAdapter() {

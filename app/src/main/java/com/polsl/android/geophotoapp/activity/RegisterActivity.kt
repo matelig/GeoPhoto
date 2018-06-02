@@ -11,10 +11,7 @@ import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.Services.networking.UserNetworking
 import com.polsl.android.geophotoapp.Services.networking.UserNetworkingDelegate
 import com.polsl.android.geophotoapp.model.UserData
-import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_register.*
 
 
@@ -22,7 +19,7 @@ class RegisterActivity : BaseActivity(), UserNetworkingDelegate {
 
     var networking = UserNetworking(context = this)
 
-    override fun success() {
+    override fun registerSuccess() {
         onRegistered()
     }
 
@@ -90,9 +87,23 @@ class RegisterActivity : BaseActivity(), UserNetworkingDelegate {
 
     fun onRegistered() {
         displayToast(R.string.register_success)
+        loginUser()
+    }
+
+    private fun loginUser() {
+        val userData = UserData(usernameEditText.text.toString(), passwordEditText.text.toString())
+        networking.login(userData)
+    }
+
+    fun onLogin() {
+        displayToast(R.string.login_success)
         startActivity(TabbedActivity::class.java)
         finish()
     }
 
+    override fun loginSuccess() {
+        UserDataSharedPrefsHelper(this).saveLoggedUser(UserData(usernameEditText.text.toString(), passwordEditText.text.toString()))
+        onLogin()
+    }
 }
 

@@ -20,4 +20,8 @@ class ExifParams(@field:SerializedName("photoId")
                  @field:SerializedName("longitude")
                  var longitude: Double? = null,
                  @field:SerializedName("latitude")
-                 var latitude: Double? = null)
+                 var latitude: Double? = null,
+                 @field:SerializedName("author")
+                 var author: String? = null,
+                 @field:SerializedName("description")
+                 var description: String? = null)

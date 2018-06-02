@@ -1,5 +1,6 @@
 package com.polsl.android.geophotoapp.model
 
+import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 /**
@@ -12,13 +13,21 @@ class PhotoFilter : Serializable {
         const val APERTURES = "apertures"
         const val DEVICES = "devices"
         const val FOCAL_LENGTHS = "focalLengths"
+        const val AUTHORS = "authors"
     }
 
+    @SerializedName("sort")
     var dateType: DateFilterType? = null
+    @SerializedName("exposure")
     var exposures: ArrayList<String> = ArrayList()
+    @SerializedName("aperture")
     var apertures: ArrayList<String> = ArrayList()
+    @SerializedName("cameraName")
     var devices: ArrayList<String> = ArrayList()
+    @SerializedName("focalLength")
     var focalLengths: ArrayList<String> = ArrayList()
+    @SerializedName("author")
+    var authors: ArrayList<String> = ArrayList()
 
     fun resetFilter() {
         dateType = null
@@ -26,5 +35,6 @@ class PhotoFilter : Serializable {
         apertures = ArrayList()
         devices = ArrayList()
         focalLengths = ArrayList()
+        authors = ArrayList()
     }
 }

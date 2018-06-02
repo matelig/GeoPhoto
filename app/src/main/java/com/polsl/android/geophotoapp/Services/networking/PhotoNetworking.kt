@@ -1,18 +1,14 @@
 package com.polsl.android.geophotoapp.Services.networking
 
 import android.content.Context
+import com.polsl.android.geophotoapp.model.PhotoFilter
 import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
-import com.polsl.android.geophotoapp.rest.restResponse.ExifParams
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.File
 
 interface UploadPhotoNetworkingDelegate {
@@ -24,6 +20,7 @@ interface FetchPhotoNetworkingDelegate {
     fun acquired(photosId: List<Long>)
     fun error(error: Throwable)
 }
+
 class PhotoNetworking(var context: Context) {
 
     var delegateUpload: UploadPhotoNetworkingDelegate? = null
@@ -57,4 +54,18 @@ class PhotoNetworking(var context: Context) {
                     delegateFetch?.error(error)
                 })
     }
+
+    fun getFilteredPhotos(photoFilter: PhotoFilter) {
+        val token = sharedPrefs.getAccessToken()
+        apiService.filterPhotos(token!!, photoFilter)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe({ result ->
+                    delegateFetch?.acquired(result)
+                }, { error ->
+                    delegateFetch?.error(error)
+                })
+    }
+
+    fun getExifsForIds(photosId: List<Long>) {}
 }
