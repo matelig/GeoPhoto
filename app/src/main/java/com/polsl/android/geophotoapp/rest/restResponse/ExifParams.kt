@@ -8,7 +8,7 @@ class ExifParams(@field:SerializedName("photoId")
                  @field:SerializedName("photoName")
                  var photoName: String? = null,
                  @field:SerializedName("date")
-                 var date: Date? = null,
+                 var date: String? = null,
                  @field:SerializedName("cameraName")
                  var cameraName: String? = null,
                  @field:SerializedName("exposure")

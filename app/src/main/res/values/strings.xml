@@ -54,10 +54,12 @@
     <string name="focal_length_label">Focal length:</string>
     <string name="aperture_label">Aperture:</string>
     <string name="exposure_label">Exposure:</string>
-    <string name="filter_authors">Authors</string>
+    <string name="filter_authors">Authors: </string>
     <string name="author_label">Author</string>
-    <string name="description_label">Description</string>
+    <string name="description_label">Description: </string>
     <string name="wait">Please wait</string>
     <string name="downloading">Downloading photos</string>
     <string name="uploading">Downloading photos</string>
+    <string name="date_pick_button">Pick date</string>
+    <string name="date_label">Date:</string>
 </resources>

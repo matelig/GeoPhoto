@@ -45,9 +45,8 @@ class GalleryPhotosFragment : Fragment(), UploadPhotoNetworkingDelegate {
         })
     }
 
-    //todo: check if it even works
     private fun uploadSelectedPhotos() {
-        (activity as BaseActivity).showProgressDialog(getString(R.string.wait), getString(R.string.downloading))
+        (activity as BaseActivity).showProgressDialog(getString(R.string.wait), getString(R.string.uploading))
         for (photo in adapter!!.items!!) {
             if ((photo as SelectablePhotoModel).isSelected) {
                 networking?.uploadPhoto(File(photo.photo.thumbnailUrl))
