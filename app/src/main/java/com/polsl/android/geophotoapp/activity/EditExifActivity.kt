@@ -12,10 +12,13 @@ import com.polsl.android.geophotoapp.dialog.MapDialogDelegate
 import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
 import com.polsl.android.geophotoapp.rest.restResponse.ExifParams
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
+import com.polsl.android.geophotoapp.util.DatePickerFragment
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_edit_exif.*
 import okhttp3.OkHttpClient
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelegate {
@@ -56,6 +59,10 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
         exposureEdit.setText(exifParams?.exposure, TextView.BufferType.EDITABLE)
         authorEdit.setText(exifParams?.author, TextView.BufferType.EDITABLE)
         descriptionEdit.setText(exifParams?.description, TextView.BufferType.EDITABLE)
+        val df = SimpleDateFormat("dd.MM.yyyy")
+        val df2 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.ENGLISH)
+        if(exifParams?.date != null)
+            dateTv.text = df.format(df2.parse(exifParams?.date))
         latitudeTv.text = exifParams?.latitude.toString()
         longitudeTv.text = exifParams?.longitude.toString()
     }
@@ -78,10 +85,19 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
             exifParams?.exposure = exposureEdit.text.toString()
             exifParams?.author = authorEdit.text.toString()
             exifParams?.description = descriptionEdit.text.toString()
+            val df = SimpleDateFormat("dd.MM.yyyy")
+            val df2 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.ENGLISH)
+            exifParams?.date = df2.format(df.parse(dateTv.text.toString()))
             exifParams?.let { params ->
                 networking.updateExifParams(params, photoId)
             } ?: displayToast("Error while sending exif params")
 
+        }
+
+        datePickerButton.setOnClickListener{
+            val datePicker = DatePickerFragment()
+            datePicker.dateTv = dateTv
+            datePicker.show(fragmentManager, "datePicker")
         }
     }
 

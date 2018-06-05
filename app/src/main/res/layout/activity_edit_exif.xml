@@ -233,6 +233,36 @@
                         android:inputType="text" />
 
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:labelFor="@id/dateTv"
+                        android:text="@string/date_label"
+                        android:textSize="@dimen/mediumTextSize" />
+
+                    <TextView
+                        android:id="@+id/dateTv"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_marginEnd="@dimen/activity_vertical_margin"/>
+
+                    <com.rey.material.widget.Button
+                        android:id="@+id/datePickerButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/date_pick_button"
+                        style="@style/BlueRoundButton"/>
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <com.rey.material.widget.Button
