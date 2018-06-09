@@ -37,7 +37,6 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
     private var networking: PhotoNetworking? = null
     private var exifNetworking: ExifNetworking? = null
 
-    //todo message when there is no internet
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_photo_list, container, false)
         return rootView
@@ -66,6 +65,8 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
         bundle.putStringArrayList(PhotoFilter.DEVICES, getDevicesName())
         bundle.putStringArrayList(PhotoFilter.EXPOSURES, getExposures())
         bundle.putStringArrayList(PhotoFilter.AUTHORS, getAuthors())
+        if (photoFilter != null)
+            bundle.putSerializable(PhotoFilter.PHOTO_FILTER, photoFilter)
         intent.putExtras(bundle)
         startActivityForResult(intent, TabbedActivity.FILTERS_CODE)
     }
@@ -80,6 +81,7 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
     }
 
     private var photos: List<Photo>? = null
+    private var filteredPhotos: List<Photo>? = null
     var adapter: ImageRvAdapter? = null
     private var subscribe: Disposable? = null
 
@@ -103,7 +105,7 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
 
     private fun getSelectablePhotos(): ArrayList<SelectablePhotoModel>? {
         var selectablePhotos = ArrayList<SelectablePhotoModel>()
-        for (photo in photos!!)
+        for (photo in filteredPhotos!!)
             selectablePhotos.add(SelectablePhotoModel(photo, false))
         return selectablePhotos
     }
@@ -111,8 +113,13 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
     override fun acquired(photosId: List<Long>) {
         getExifParamsForPhotos(photosId)
         photos = getPhotosList(photosId)
+        filteredPhotos = photos
         preparePhotosAdapter()
         setupItemClick()
+    }
+
+    override fun acquiredFilteredPhotos(result: List<Long>) {
+        filteredPhotos = getPhotosList(result)
     }
 
     private var savedExifParams: List<ExifParams> = ArrayList()
@@ -180,15 +187,17 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
         subscribe?.dispose()
     }
 
+    private var photoFilter: PhotoFilter? = null
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == TabbedActivity.FILTERS_CODE) {
-            val photoFilter = data.extras.getSerializable(FilterActivity.FILTER_KEY) as PhotoFilter
-            filterPhotos(photoFilter)
+            photoFilter = data.extras.getSerializable(FilterActivity.FILTER_KEY) as PhotoFilter
+            filterPhotos()
         }
     }
 
-    private fun filterPhotos(photoFilter: PhotoFilter) {
+    private fun filterPhotos() {
         networking?.getFilteredPhotos(photoFilter)
     }
 
