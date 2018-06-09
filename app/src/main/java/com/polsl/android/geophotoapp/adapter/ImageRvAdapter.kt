@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.polsl.android.geophotoapp.R
+import com.polsl.android.geophotoapp.model.Photo
 import com.polsl.android.geophotoapp.model.SelectablePhotoModel
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
 import com.polsl.android.geophotoapp.viewholder.BaseViewHolder
@@ -12,11 +13,7 @@ import com.polsl.android.geophotoapp.viewholder.PhotoViewHolder
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import io.reactivex.subjects.PublishSubject
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Response
-import java.io.IOException
-
 
 /**
  * Created by alachman on 29.04.2018.
@@ -24,7 +21,7 @@ import java.io.IOException
 
 class ImageRvAdapter(private val context: Context) : BaseRvAdapter() {
     private var isSelecting = false
-     val selectedItemsObservable = PublishSubject.create<Any>()
+    val selectedItemsObservable = PublishSubject.create<Any>()
 
 
     override fun onCreateBaseViewHolder(parent: ViewGroup?): BaseViewHolder {
@@ -77,10 +74,18 @@ class ImageRvAdapter(private val context: Context) : BaseRvAdapter() {
     }
 
     private fun updateSelectedItemsObservable() {
-       selectedItemsObservable.onNext(getSelectedItemsCount())
+        selectedItemsObservable.onNext(getSelectedItemsCount())
     }
 
     private fun getSelectedItemsCount(): Int =
-            (items as ArrayList<SelectablePhotoModel>).filter { selectablePhotoModel -> selectablePhotoModel.isSelected }.count()
+            (items as ArrayList<SelectablePhotoModel>)
+                    .filter(SelectablePhotoModel::isSelected)
+                    .count()
+
+    fun getSelectedPhotos(): List<Photo> {
+        return (items as ArrayList<SelectablePhotoModel>)
+                .filter(SelectablePhotoModel::isSelected)
+                .map { it.photo }
+    }
 
 }

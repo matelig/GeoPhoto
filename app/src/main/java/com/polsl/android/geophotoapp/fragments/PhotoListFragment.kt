@@ -2,9 +2,13 @@ package com.polsl.android.geophotoapp.fragments
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Environment
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,17 +27,27 @@ import com.polsl.android.geophotoapp.model.PhotoFilter
 import com.polsl.android.geophotoapp.model.SelectablePhotoModel
 import com.polsl.android.geophotoapp.rest.GeoPhotoEndpoints
 import com.polsl.android.geophotoapp.rest.restResponse.ExifParams
+import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
+import com.squareup.picasso.OkHttp3Downloader
+import com.squareup.picasso.Picasso
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_photo_list.*
+import okhttp3.OkHttpClient
+import timber.log.Timber
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.lang.Exception
 
 /**
  * Created by alachman on 29.04.2018.
  */
 class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
-
+    private var downloadingPublishSubject = PublishSubject.create<String>()
     private var networking: PhotoNetworking? = null
     private var exifNetworking: ExifNetworking? = null
 
@@ -72,12 +86,79 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
     }
 
     private fun prepareDownloadButton() {
-
         downloadPhotosButton.setOnClickListener({
-            //todo
-//            downloadPhotos()
-            Toast.makeText(activity, "Photos downloaded", Toast.LENGTH_SHORT).show()
+          //  (activity as BaseActivity).showProgressDialog(getString(R.string.wait), getString(R.string.downloading))
+            downloadPhotos()
         })
+    }
+
+    private fun downloadPhotos() {
+        var photos = adapter?.getSelectedPhotos()
+        var photoCounter = 0
+        downloadingPublishSubject.subscribe({
+            photoCounter++
+            Log.d("Another", "Photo count " + photoCounter)
+            if (photoCounter == photos!!.size)
+                finishDownloading()
+        })
+        if (photos != null)
+            for (photo in photos!!)
+                downloadPhoto(photo)
+    }
+
+    private fun downloadPhoto(photo: Photo) {
+        val photoUrl = GeoPhotoEndpoints.URL + "displayPhoto?photoId=" + photo.photoId
+        val client = OkHttpClient.Builder()
+                .addInterceptor { chain ->
+                    val newRequest = chain.request().newBuilder()
+                            .addHeader("Authorization", UserDataSharedPrefsHelper(context).getAccessToken())
+                            .build()
+                    chain.proceed(newRequest)
+                }
+                .build()
+
+        val picasso = Picasso.Builder(context).downloader(OkHttp3Downloader(client)).build()
+        picasso.load(photoUrl)
+                .into(getTarget(photo.photoId.toString()))
+    }
+
+    //target to save
+    private fun getTarget(url: String): com.squareup.picasso.Target {
+        return object : com.squareup.picasso.Target {
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                Log.e("Error", "Bitmap failed")
+                downloadingPublishSubject.onNext("error")
+            }
+
+            override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
+                Thread(Runnable {
+                    val folder = File(Environment.getExternalStorageDirectory().getPath() + "/" + "GeoPhoto")
+                    if (!folder.exists())
+                        folder.mkdirs()
+                    val file = File(folder, "/" + System.currentTimeMillis().toString() + "_" + url + ".png")
+                    try {
+                        file.createNewFile()
+                        val ostream = FileOutputStream(file)
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, ostream)
+                        ostream.flush()
+                        ostream.close()
+                        Log.d("Download", "Bitmap saved")
+                        downloadingPublishSubject.onNext(url)
+                    } catch (e: IOException) {
+                        Timber.e(e.getLocalizedMessage())
+                    }
+                }).start()
+
+            }
+
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+
+            }
+        }
+    }
+
+    private fun finishDownloading() {
+        (activity as BaseActivity).hideProgressDialog()
     }
 
     private var photos: List<Photo>? = null
@@ -120,6 +201,7 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
 
     override fun acquiredFilteredPhotos(result: List<Long>) {
         filteredPhotos = getPhotosList(result)
+        preparePhotosAdapter()
     }
 
     private var savedExifParams: List<ExifParams> = ArrayList()
@@ -202,23 +284,33 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
     }
 
     private fun getAuthors(): ArrayList<String?>? {
-        return ArrayList(savedExifParams.filter { exifParams -> exifParams.author != null }.map { exifParams -> exifParams.author }.distinct().toList())
+        return ArrayList(savedExifParams.filter { exifParams -> exifParams.author != null }
+                .map { exifParams -> exifParams.author }
+                .distinct().toList())
     }
 
     private fun getDevicesName(): ArrayList<String?>? {
-        return ArrayList(savedExifParams.filter { exifParams -> exifParams.cameraName != null }.map { exifParams -> exifParams.cameraName }.distinct().toList())
+        return ArrayList(savedExifParams.filter { exifParams -> exifParams.cameraName != null }
+                .map { exifParams -> exifParams.cameraName }
+                .distinct().toList())
 
     }
 
     private fun getFocalLengths(): ArrayList<String?>? {
-        return ArrayList(savedExifParams.filter { exifParams -> exifParams.focalLength != null }.map { exifParams -> exifParams.focalLength }.distinct().toList())
+        return ArrayList(savedExifParams.filter { exifParams -> exifParams.focalLength != null }
+                .map { exifParams -> exifParams.focalLength }
+                .distinct().toList())
     }
 
     private fun getApertures(): ArrayList<String?>? {
-        return ArrayList(savedExifParams.filter { exifParams -> exifParams.maxAperture != null }.map { exifParams -> exifParams.maxAperture }.distinct().toList())
+        return ArrayList(savedExifParams.filter { exifParams -> exifParams.maxAperture != null }
+                .map { exifParams -> exifParams.maxAperture }
+                .distinct().toList())
     }
 
     private fun getExposures(): ArrayList<String?>? {
-        return ArrayList(savedExifParams.filter { exifParams -> exifParams.exposure != null }.map { exifParams -> exifParams.exposure }.distinct().toList())
+        return ArrayList(savedExifParams.filter { exifParams -> exifParams.exposure != null }
+                .map { exifParams -> exifParams.exposure }
+                .distinct().toList())
     }
 }

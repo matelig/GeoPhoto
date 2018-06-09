@@ -20,7 +20,6 @@ abstract class BaseActivity: AppCompatActivity() {
 
     private var unbinder: Unbinder? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         unbinder = ButterKnife.bind(this)

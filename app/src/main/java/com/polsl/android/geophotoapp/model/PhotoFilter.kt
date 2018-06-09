@@ -17,17 +17,17 @@ class PhotoFilter : Serializable {
         const val PHOTO_FILTER = "photoFilter"
     }
 
-    @SerializedName("sort")
+    @SerializedName("sortAsc")
     var dateType: DateFilterType? = null
-    @SerializedName("exposure")
+    @SerializedName("exposureList")
     var exposures: ArrayList<String> = ArrayList()
-    @SerializedName("aperture")
+    @SerializedName("maxApertureList")
     var apertures: ArrayList<String> = ArrayList()
-    @SerializedName("cameraName")
+    @SerializedName("cameraNames")
     var devices: ArrayList<String> = ArrayList()
-    @SerializedName("focalLength")
+    @SerializedName("focalLengthList")
     var focalLengths: ArrayList<String> = ArrayList()
-    @SerializedName("author")
+    @SerializedName("authors")
     var authors: ArrayList<String> = ArrayList()
 
     fun resetFilter() {

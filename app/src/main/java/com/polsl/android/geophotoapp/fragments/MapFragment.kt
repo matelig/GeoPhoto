@@ -77,7 +77,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, PhotoLocationNetworkingDeleg
     override fun onDestroyView() {
         super.onDestroyView()
         gMap?.clear()
-        photoClusters
     }
 
     override fun success(list: List<PhotoLocation>) {

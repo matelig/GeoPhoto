@@ -7,9 +7,9 @@ import java.io.Serializable
  * Created by alachman on 06.05.2018.
  */
 enum class DateFilterType constructor(val typeCode: Int) : Serializable {
-    @SerializedName("Asc")
+    @SerializedName("true")
     ASCENDING(1),
-    @SerializedName("Desc")
+    @SerializedName("false")
     DESCENDING(2);
 
     companion object {
