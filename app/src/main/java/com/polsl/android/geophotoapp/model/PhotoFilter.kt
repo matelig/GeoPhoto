@@ -14,6 +14,7 @@ class PhotoFilter : Serializable {
         const val DEVICES = "devices"
         const val FOCAL_LENGTHS = "focalLengths"
         const val AUTHORS = "authors"
+        const val PHOTO_FILTER = "photoFilter"
     }
 
     @SerializedName("sort")

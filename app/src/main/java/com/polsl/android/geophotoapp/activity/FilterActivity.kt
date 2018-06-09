@@ -22,7 +22,6 @@ class FilterActivity : BaseActivity() {
     private var authors: ArrayList<String>? = null
     private var photoFilter: PhotoFilter = PhotoFilter()
 
-
     private lateinit var aperturesAdapter: FilterItemAdapter
     private lateinit var devicesAdapter: FilterItemAdapter
     private lateinit var focalLengthAdapter: FilterItemAdapter
@@ -39,6 +38,51 @@ class FilterActivity : BaseActivity() {
         setUpFiltersData()
         setUpDateRadioButtons()
         setUpButtons()
+        setUpInitialSelections()
+    }
+
+    private fun setUpInitialSelections() {
+        intent.getSerializableExtra(PhotoFilter.PHOTO_FILTER)?.let {
+            photoFilter = it as PhotoFilter
+            setDateSelection()
+            setExposures()
+            setFocalLengths()
+            setAuthors()
+            setDevices()
+            setApertures()
+        }
+    }
+
+    private fun setApertures() {
+        for (aperture in photoFilter.apertures)
+            aperturesAdapter.selectItem(aperture)
+    }
+
+    private fun setDevices() {
+        for (device in photoFilter.devices)
+            devicesAdapter.selectItem(device)
+    }
+
+    private fun setAuthors() {
+        for (author in photoFilter.authors)
+            authorsAdapter.selectItem(author)
+    }
+
+    private fun setFocalLengths() {
+        for (focalLength in photoFilter.focalLengths)
+            focalLengthAdapter.selectItem(focalLength)
+    }
+
+    private fun setExposures() {
+        for (exposure in photoFilter.exposures)
+            exposuresAdapter.selectItem(exposure)
+    }
+
+    private fun setDateSelection() {
+        if (photoFilter.dateType == DateFilterType.ASCENDING)
+            dateAscendingRb.isChecked = true
+        else if (photoFilter.dateType == DateFilterType.DESCENDING)
+            dateDescendingRb.isChecked = true
     }
 
     fun setUpButtons() {
@@ -48,7 +92,6 @@ class FilterActivity : BaseActivity() {
 
     private fun setUpApplyButton() {
         applyFiltersBtn.setOnClickListener({ onApplyButtonClicked() })
-
     }
 
     private fun onApplyButtonClicked() {

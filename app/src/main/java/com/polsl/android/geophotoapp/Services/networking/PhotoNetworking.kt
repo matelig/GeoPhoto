@@ -19,6 +19,7 @@ interface UploadPhotoNetworkingDelegate {
 interface FetchPhotoNetworkingDelegate {
     fun acquired(photosId: List<Long>)
     fun error(error: Throwable)
+    fun acquiredFilteredPhotos(result: List<Long>)
 }
 
 class PhotoNetworking(var context: Context) {
@@ -55,13 +56,15 @@ class PhotoNetworking(var context: Context) {
                 })
     }
 
-    fun getFilteredPhotos(photoFilter: PhotoFilter) {
+    fun getFilteredPhotos(photoFilter: PhotoFilter?) {
+        if (photoFilter == null)
+            return
         val token = sharedPrefs.getAccessToken()
         apiService.filterPhotos(token!!, photoFilter)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe({ result ->
-                    delegateFetch?.acquired(result)
+                    delegateFetch?.acquiredFilteredPhotos(result)
                 }, { error ->
                     delegateFetch?.error(error)
                 })

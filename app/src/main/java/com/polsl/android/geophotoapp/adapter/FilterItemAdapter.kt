@@ -37,4 +37,9 @@ class FilterItemAdapter(private val context: Context) : BaseRvAdapter() {
          notifyDataSetChanged()
     }
 
+    fun selectItem(value: String) {
+        (items as ArrayList<SelectableFilterModel>).find { it.value == value }?.isSelected = true
+        notifyDataSetChanged()
+    }
+
 }
