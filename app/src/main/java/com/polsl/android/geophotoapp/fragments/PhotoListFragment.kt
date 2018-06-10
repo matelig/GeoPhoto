@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,10 +30,14 @@ import com.polsl.android.geophotoapp.rest.restResponse.ExifParams
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_photo_list.*
 import okhttp3.OkHttpClient
 import timber.log.Timber
@@ -41,7 +46,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Exception
 
-
 /**
  * Created by alachman on 29.04.2018.
  */
@@ -49,7 +53,9 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
 
     private var networking: PhotoNetworking? = null
     private var exifNetworking: ExifNetworking? = null
-
+    private var downloadSubject = PublishSubject.create<String>()
+    private var compositeDisposable = CompositeDisposable()
+    private var targets = ArrayList<Target>()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_photo_list, container, false)
         return rootView
@@ -64,6 +70,11 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
         getPhotos()
         prepareDownloadButton()
         setUpFiltersObservable()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        compositeDisposable.dispose()
     }
 
     private fun setUpFiltersObservable() {
@@ -93,10 +104,21 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
 
     private fun downloadPhotos() {
         var photos = adapter?.getSelectedPhotos()
+        var counter = 0
+        if (compositeDisposable.isDisposed)
+            compositeDisposable = CompositeDisposable()
+        downloadSubject
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ result ->
+                    counter++
+                    if (counter == photos!!.size)
+                        finishDownloading()
+                })
+                .addTo(compositeDisposable)
         if (photos != null)
             for (photo in photos!!)
                 downloadPhoto(photo)
-        finishDownloading()
     }
 
     private fun downloadPhoto(photo: Photo) {
@@ -110,43 +132,53 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
                 .build()
         val photoUrl = GeoPhotoEndpoints.URL + "displayPhoto?photoId=" + photo.photoId
         val picasso = Picasso.Builder(context).downloader(OkHttp3Downloader(client)).build()
+        val target = getTarget(photo.photoId.toString())
         picasso.load(photoUrl)
-                .into(getTarget(photo.photoId.toString()))
+                .into(target)
+        targets.add(target)
     }
 
-    //target to save
     private fun getTarget(url: String): com.squareup.picasso.Target {
         return object : com.squareup.picasso.Target {
             override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                Log.d("Target", "On error " + url)
             }
 
             override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
-                Thread(Runnable {
-                    val folder = File(Environment.getExternalStorageDirectory().getPath() + "/" + "GEOPHOTO")
-                    if (!folder.exists())
-                        folder.mkdirs()
-                    val file = File(folder, "/" + System.currentTimeMillis() + "_" + url + ".jpg")
-                    try {
-                        file.createNewFile()
-                        val ostream = FileOutputStream(file)
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream)
-                        ostream.flush()
-                        ostream.close()
-                    } catch (e: IOException) {
-                        Timber.e(e.getLocalizedMessage())
-                    }
-                }).start()
+                downloadSubject.onNext(downloadImage(bitmap))
+            }
 
+            private fun downloadImage(bitmap: Bitmap): String {
+                var result = url
+                val folder = File(Environment.getExternalStorageDirectory().getPath() + "/" + "GEOPHOTO")
+                if (!folder.exists())
+                    folder.mkdirs()
+                val file = File(folder, "/" + System.currentTimeMillis() + "_" + url + ".jpg")
+                try {
+                    file.createNewFile()
+                    Log.d("Target", "Image download " + url)
+                    val ostream = FileOutputStream(file)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, ostream)
+                    ostream.flush()
+                    ostream.close()
+                } catch (e: IOException) {
+                    Timber.e(e.getLocalizedMessage())
+                } finally {
+                    Log.d("Target", "Finally  " + url)
+                    return result
+                }
             }
 
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-
+                Log.d("Target", "On prepare load " + url)
             }
         }
     }
 
     private fun finishDownloading() {
         (activity as BaseActivity).hideProgressDialog()
+        (activity as BaseActivity).displayToast(R.string.download_finished)
+        compositeDisposable.clear()
     }
 
     private var photos: List<Photo>? = null
