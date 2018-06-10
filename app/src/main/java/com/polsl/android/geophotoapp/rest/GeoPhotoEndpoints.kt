@@ -55,8 +55,8 @@ interface GeoPhotoEndpoints {
     fun downloadPhoto(@Header("Authorization") authorization: String, @Query("photoId") photoId: Long): Call<ResponseBody>
 
     companion object geoPhotoApi {
-        const val URL = "http://195.181.223.56:8080/SIM/"
-        //const val URL = "http://192.168.1.2:8080/"
+        //const val URL = "http://195.181.223.56:8080/SIM/"
+        const val URL = "http://192.168.0.105:8080/"
 
         fun create(): GeoPhotoEndpoints {
             val builder = OkHttpClient.Builder()
