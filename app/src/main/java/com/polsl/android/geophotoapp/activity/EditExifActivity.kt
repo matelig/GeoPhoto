@@ -94,7 +94,7 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
             exifParams?.cameraName = modelEdit.text.toString()
             exifParams?.focalLength = focalLengthEdit.text.toString() + " mm"
             exifParams?.maxAperture = "f/" + apertureEdit.text.toString()
-            exifParams?.exposure = exposureFirstNumberEdit.text.toString() + "/" + exposureSecondNumberEdit.text.toString()
+            exifParams?.exposure = exposureFirstNumberEdit.text.toString() + "/" + exposureSecondNumberEdit.text.toString() + " sec"
             exifParams?.author = authorEdit.text.toString()
             exifParams?.description = descriptionEdit.text.toString()
             val df = SimpleDateFormat("dd.MM.yyyy")
