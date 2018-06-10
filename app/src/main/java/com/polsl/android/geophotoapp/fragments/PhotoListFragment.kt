@@ -87,7 +87,7 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
 
     private fun prepareDownloadButton() {
         downloadPhotosButton.setOnClickListener({
-          //  (activity as BaseActivity).showProgressDialog(getString(R.string.wait), getString(R.string.downloading))
+            (activity as BaseActivity).showProgressDialog(getString(R.string.wait), getString(R.string.downloading))
             downloadPhotos()
         })
     }
@@ -159,6 +159,7 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
 
     private fun finishDownloading() {
         (activity as BaseActivity).hideProgressDialog()
+        (activity as BaseActivity).displayToast(R.string.download_finished)
     }
 
     private var photos: List<Photo>? = null
@@ -271,11 +272,13 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
 
     private var photoFilter: PhotoFilter? = null
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == TabbedActivity.FILTERS_CODE) {
-            photoFilter = data.extras.getSerializable(FilterActivity.FILTER_KEY) as PhotoFilter
-            filterPhotos()
+            data?.let {
+                photoFilter = it.extras.getSerializable(FilterActivity.FILTER_KEY) as PhotoFilter
+                filterPhotos()
+            }
         }
     }
 
