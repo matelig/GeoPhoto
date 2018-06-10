@@ -27,11 +27,11 @@
         <Button
             android:id="@+id/downloadPhotosButton"
             style="@style/BlueRoundButton"
-            android:layout_margin="@dimen/margin_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/margin_small"
+            android:layout_margin="@dimen/margin_small"
             android:gravity="center_vertical"
+            android:padding="@dimen/margin_small"
             android:text="Download photos" />
     </LinearLayout>
 
@@ -39,6 +39,5 @@
         android:id="@+id/photosRv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
 
 </LinearLayout>
