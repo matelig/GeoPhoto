@@ -1,6 +1,7 @@
 package com.polsl.android.geophotoapp.activity
 
 import android.Manifest
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -194,6 +195,7 @@ class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate, UploadPhoto
 
     override fun success() {
         displayToast("Photo uploaded")
+        finish()
     }
 
     override fun error(error: Throwable) {
@@ -207,7 +209,8 @@ class TakenPhotoActivity : BaseActivity(), LocationProviderDelegate, UploadPhoto
         photoPath?.let {
             var exifParams = ExifInterface(it)
             var location = exifParams.latLong
-            exifParams.setLatLong(currentLocation.latitude, currentLocation.longitude)
+            exifParams.setGpsInfo(currentLocation)
+            //exifParams.setLatLong(currentLocation.latitude, currentLocation.longitude)
             //exifParams.setLatLong(51.5033640, 0.0) TODO: for testing uncomment this part
             exifParams.saveAttributes()
         }

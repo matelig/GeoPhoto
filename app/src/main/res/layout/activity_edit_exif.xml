@@ -127,6 +127,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/activity_vertical_margin"
+                        android:gravity="center"
                         android:inputType="text" />
 
                 </LinearLayout>
@@ -145,10 +146,18 @@
 
                     <EditText
                         android:id="@+id/focalLengthEdit"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:inputType="numberDecimal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/activity_vertical_margin"
-                        android:inputType="text" />
+                        android:text="mm"
+                        android:textSize="@dimen/mediumTextSize" />
 
                 </LinearLayout>
 
@@ -164,12 +173,20 @@
                         android:text="@string/aperture_label"
                         android:textSize="@dimen/mediumTextSize" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/activity_horizontal_margin"
+                        android:text="f/"
+                        android:textSize="@dimen/mediumTextSize" />
+
                     <EditText
                         android:id="@+id/apertureEdit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/activity_vertical_margin"
-                        android:inputType="text" />
+                        android:gravity="center"
+                        android:inputType="numberDecimal" />
 
                 </LinearLayout>
 
@@ -181,18 +198,42 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:labelFor="@id/exposureEdit"
+                        android:labelFor="@id/exposureFirstNumberEdit"
                         android:text="@string/exposure_label"
                         android:textSize="@dimen/mediumTextSize" />
 
                     <EditText
-                        android:id="@+id/exposureEdit"
-                        android:layout_width="match_parent"
+                        android:id="@+id/exposureFirstNumberEdit"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:inputType="numberDecimal|number|numberSigned" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="/"
+                        android:textSize="@dimen/mediumTextSize" />
+
+                    <EditText
+                        android:id="@+id/exposureSecondNumberEdit"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:inputType="numberDecimal|number|numberSigned" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/activity_vertical_margin"
-                        android:inputType="text" />
+                        android:text="sec"
+                        android:textSize="@dimen/mediumTextSize" />
+
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -210,9 +251,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/activity_vertical_margin"
+                        android:gravity="center"
                         android:inputType="text" />
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -249,17 +292,17 @@
                     <TextView
                         android:id="@+id/dateTv"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:layout_marginEnd="@dimen/activity_vertical_margin"/>
+                        android:layout_marginEnd="@dimen/activity_vertical_margin"
+                        android:layout_weight="1"
+                        android:gravity="center" />
 
                     <com.rey.material.widget.Button
                         android:id="@+id/datePickerButton"
+                        style="@style/BlueRoundButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/date_pick_button"
-                        style="@style/BlueRoundButton"/>
+                        android:text="@string/date_pick_button" />
 
                 </LinearLayout>
 

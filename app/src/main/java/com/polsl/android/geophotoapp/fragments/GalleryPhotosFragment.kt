@@ -1,8 +1,10 @@
 package com.polsl.android.geophotoapp.fragments
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.media.ExifInterface
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
@@ -16,6 +18,7 @@ import com.polsl.android.geophotoapp.activity.BaseActivity
 import com.polsl.android.geophotoapp.adapter.GalleryImageRvAdapter
 import com.polsl.android.geophotoapp.model.Photo
 import com.polsl.android.geophotoapp.model.SelectablePhotoModel
+import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_gallery_photos.*
 import java.io.File
@@ -27,10 +30,12 @@ class GalleryPhotosFragment : Fragment(), UploadPhotoNetworkingDelegate {
     var adapter: GalleryImageRvAdapter? = null
     private var subscribe: Disposable? = null
     var networking: PhotoNetworking? = null
+    var user: String? = null
 
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        user = UserDataSharedPrefsHelper(activity).getLoggedUser()?.username
         photos = getImagePaths(context)
         networking = PhotoNetworking(context)
         networking?.delegateUpload = this
@@ -81,7 +86,10 @@ class GalleryPhotosFragment : Fragment(), UploadPhotoNetworkingDelegate {
                     var photoModel = it as? SelectablePhotoModel
                     photoModel?.photo?.let {
                         //Toast.makeText(this.context, "Clicked on ${it.url}", Toast.LENGTH_LONG).show()
-                        //var imageExif = ExifInterface(it.url)
+                        //var imageExif = ExifInterface(it.thumbnailUrl!!)
+                        //var model = imageExif.getAttribute(ExifInterface.TAG_MODEL)
+                        //var make = imageExif.getAttribute(ExifInterface.TAG_MAKE)
+                        //Toast.makeText(activity, "$model $make", Toast.LENGTH_SHORT).show()
                         //var location = imageExif.latLong
                         //Toast.makeText(context, "Latitude ${location?.get(0)}, longitude ${location?.get(1)}", Toast.LENGTH_SHORT).show()
                         //showEditExifActivity(it.url)

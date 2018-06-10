@@ -54,9 +54,21 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
 
     private fun fillEditTexts() {
         modelEdit.setText(exifParams?.cameraName, TextView.BufferType.EDITABLE)
-        focalLengthEdit.setText(exifParams?.focalLength, TextView.BufferType.EDITABLE)
-        apertureEdit.setText(exifParams?.maxAperture, TextView.BufferType.EDITABLE)
-        exposureEdit.setText(exifParams?.exposure, TextView.BufferType.EDITABLE)
+
+        val focalLength = exifParams?.focalLength?.split(" ")!![0]
+        focalLengthEdit.setText(focalLength, TextView.BufferType.EDITABLE)
+
+        exifParams?.maxAperture?.split("/").let { aperture ->
+            apertureEdit.setText(aperture!![1], TextView.BufferType.EDITABLE)
+        }
+
+        val exposure = exifParams?.exposure?.split(" ")!![0]
+        val exposureNumbers = exposure.split("/")
+        exposureNumbers.let { numbers ->
+            exposureFirstNumberEdit.setText(numbers[0], TextView.BufferType.EDITABLE)
+            exposureSecondNumberEdit.setText(numbers[1], TextView.BufferType.EDITABLE)
+        }
+
         authorEdit.setText(exifParams?.author, TextView.BufferType.EDITABLE)
         descriptionEdit.setText(exifParams?.description, TextView.BufferType.EDITABLE)
         val df = SimpleDateFormat("dd.MM.yyyy")
@@ -80,9 +92,9 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
 
         applyExifChanges.setOnClickListener {
             exifParams?.cameraName = modelEdit.text.toString()
-            exifParams?.focalLength = focalLengthEdit.text.toString()
-            exifParams?.maxAperture = apertureEdit.text.toString()
-            exifParams?.exposure = exposureEdit.text.toString()
+            exifParams?.focalLength = focalLengthEdit.text.toString() + " mm"
+            exifParams?.maxAperture = "f/" + apertureEdit.text.toString()
+            exifParams?.exposure = exposureFirstNumberEdit.text.toString() + "/" + exposureSecondNumberEdit.text.toString()
             exifParams?.author = authorEdit.text.toString()
             exifParams?.description = descriptionEdit.text.toString()
             val df = SimpleDateFormat("dd.MM.yyyy")
