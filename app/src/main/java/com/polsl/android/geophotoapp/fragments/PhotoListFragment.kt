@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,7 +33,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_photo_list.*
 import okhttp3.OkHttpClient
 import timber.log.Timber
@@ -43,11 +41,12 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Exception
 
+
 /**
  * Created by alachman on 29.04.2018.
  */
 class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
-    private var downloadingPublishSubject = PublishSubject.create<String>()
+
     private var networking: PhotoNetworking? = null
     private var exifNetworking: ExifNetworking? = null
 
@@ -94,20 +93,13 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
 
     private fun downloadPhotos() {
         var photos = adapter?.getSelectedPhotos()
-        var photoCounter = 0
-        downloadingPublishSubject.subscribe({
-            photoCounter++
-            Log.d("Another", "Photo count " + photoCounter)
-            if (photoCounter == photos!!.size)
-                finishDownloading()
-        })
         if (photos != null)
             for (photo in photos!!)
                 downloadPhoto(photo)
+        finishDownloading()
     }
 
     private fun downloadPhoto(photo: Photo) {
-        val photoUrl = GeoPhotoEndpoints.URL + "displayPhoto?photoId=" + photo.photoId
         val client = OkHttpClient.Builder()
                 .addInterceptor { chain ->
                     val newRequest = chain.request().newBuilder()
@@ -116,7 +108,7 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
                     chain.proceed(newRequest)
                 }
                 .build()
-
+        val photoUrl = GeoPhotoEndpoints.URL + "displayPhoto?photoId=" + photo.photoId
         val picasso = Picasso.Builder(context).downloader(OkHttp3Downloader(client)).build()
         picasso.load(photoUrl)
                 .into(getTarget(photo.photoId.toString()))
@@ -126,24 +118,20 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
     private fun getTarget(url: String): com.squareup.picasso.Target {
         return object : com.squareup.picasso.Target {
             override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                Log.e("Error", "Bitmap failed")
-                downloadingPublishSubject.onNext("error")
             }
 
             override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
                 Thread(Runnable {
-                    val folder = File(Environment.getExternalStorageDirectory().getPath() + "/" + "GeoPhoto")
+                    val folder = File(Environment.getExternalStorageDirectory().getPath() + "/" + "GEOPHOTO")
                     if (!folder.exists())
                         folder.mkdirs()
-                    val file = File(folder, "/" + System.currentTimeMillis().toString() + "_" + url + ".png")
+                    val file = File(folder, "/" + System.currentTimeMillis() + "_" + url + ".jpg")
                     try {
                         file.createNewFile()
                         val ostream = FileOutputStream(file)
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, ostream)
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream)
                         ostream.flush()
                         ostream.close()
-                        Log.d("Download", "Bitmap saved")
-                        downloadingPublishSubject.onNext(url)
                     } catch (e: IOException) {
                         Timber.e(e.getLocalizedMessage())
                     }
@@ -159,7 +147,6 @@ class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
 
     private fun finishDownloading() {
         (activity as BaseActivity).hideProgressDialog()
-        (activity as BaseActivity).displayToast(R.string.download_finished)
     }
 
     private var photos: List<Photo>? = null
