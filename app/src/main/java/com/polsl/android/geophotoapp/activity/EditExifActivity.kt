@@ -88,10 +88,22 @@ class EditExifActivity : BaseActivity(), MapDialogDelegate, ExifNetworkingDelega
         }
 
         applyExifChanges.setOnClickListener {
+            if (!focalLengthEdit.text.isEmpty())
+                exifParams?.focalLength = focalLengthEdit.text.toString() + " mm"
+            else
+                exifParams?.focalLength = null
+
+            if (!exposureFirstNumberEdit.text.isEmpty() && !exposureSecondNumberEdit.text.isEmpty())
+                exifParams?.exposure = exposureFirstNumberEdit.text.toString() + "/" + exposureSecondNumberEdit.text.toString() + " sec"
+            else
+                exifParams?.exposure = null
+
+            if (!apertureEdit.text.isEmpty())
+                exifParams?.maxAperture = "f/" + apertureEdit.text.toString()
+            else
+                exifParams?.maxAperture = null
+
             exifParams?.cameraName = modelEdit.text.toString()
-            exifParams?.focalLength = focalLengthEdit.text.toString() + " mm"
-            exifParams?.maxAperture = "f/" + apertureEdit.text.toString()
-            exifParams?.exposure = exposureFirstNumberEdit.text.toString() + "/" + exposureSecondNumberEdit.text.toString() + " sec"
             exifParams?.author = authorEdit.text.toString()
             exifParams?.description = descriptionEdit.text.toString()
             val df = SimpleDateFormat("dd.MM.yyyy")
