@@ -21,7 +21,6 @@ interface MapDialogDelegate {
     fun onCancelButtonClick()
 }
 
-
 class MapDialog : DialogFragment(), OnMapReadyCallback {
 
     var delegate: MapDialogDelegate? = null

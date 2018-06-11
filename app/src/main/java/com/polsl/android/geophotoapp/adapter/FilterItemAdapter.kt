@@ -8,9 +8,6 @@ import com.polsl.android.geophotoapp.model.SelectableFilterModel
 import com.polsl.android.geophotoapp.viewholder.BaseViewHolder
 import com.polsl.android.geophotoapp.viewholder.FilterViewHolder
 
-/**
- * Created by alachman on 06.05.2018.
- */
 class FilterItemAdapter(private val context: Context) : BaseRvAdapter() {
     override fun onCreateBaseViewHolder(parent: ViewGroup?): BaseViewHolder {
         val view = LayoutInflater.from(parent?.context).inflate(R.layout.filter_item, parent, false)

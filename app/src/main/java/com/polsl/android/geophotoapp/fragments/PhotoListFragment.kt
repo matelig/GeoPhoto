@@ -46,9 +46,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Exception
 
-/**
- * Created by alachman on 29.04.2018.
- */
 class PhotoListFragment : Fragment(), FetchPhotoNetworkingDelegate {
 
     private var networking: PhotoNetworking? = null

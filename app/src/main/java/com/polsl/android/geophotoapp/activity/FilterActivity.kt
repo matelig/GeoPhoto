@@ -11,9 +11,6 @@ import com.polsl.android.geophotoapp.model.PhotoFilter
 import com.polsl.android.geophotoapp.model.SelectableFilterModel
 import kotlinx.android.synthetic.main.activity_filter.*
 
-/**
- * Created by alachman on 04.05.2018.
- */
 class FilterActivity : BaseActivity() {
     private var exposures: ArrayList<String>? = null
     private var apertures: ArrayList<String>? = null

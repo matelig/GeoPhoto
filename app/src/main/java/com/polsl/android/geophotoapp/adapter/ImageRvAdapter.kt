@@ -15,10 +15,6 @@ import com.squareup.picasso.Picasso
 import io.reactivex.subjects.PublishSubject
 import okhttp3.OkHttpClient
 
-/**
- * Created by alachman on 29.04.2018.
- */
-
 class ImageRvAdapter(private val context: Context) : BaseRvAdapter() {
     private var isSelecting = false
     val selectedItemsObservable = PublishSubject.create<Any>()
