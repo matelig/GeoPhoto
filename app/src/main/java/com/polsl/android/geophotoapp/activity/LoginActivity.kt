@@ -14,9 +14,6 @@ import com.polsl.android.geophotoapp.model.UserData
 import com.polsl.android.geophotoapp.sharedprefs.UserDataSharedPrefsHelper
 import kotlinx.android.synthetic.main.activity_login.*
 
-/**
- * Created by alachman on 21.04.2018.
- */
 class LoginActivity : BaseActivity(), UserNetworkingDelegate {
     override fun registerSuccess() {
     }

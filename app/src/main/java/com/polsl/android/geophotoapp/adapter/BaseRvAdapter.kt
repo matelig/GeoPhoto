@@ -6,9 +6,6 @@ import android.widget.Toast
 import com.polsl.android.geophotoapp.viewholder.BaseViewHolder
 import io.reactivex.subjects.PublishSubject
 
-/**
- * Created by alachman on 29.04.2018.
- */
 abstract class BaseRvAdapter : RecyclerView.Adapter<BaseViewHolder>() {
 
     var items: ArrayList<Any>? = ArrayList()

@@ -13,9 +13,6 @@ import android.widget.Toast
 import butterknife.ButterKnife
 import butterknife.Unbinder
 
-/**
- * Created by alachman on 21.04.2018.
- */
 abstract class BaseActivity: AppCompatActivity() {
 
     private var unbinder: Unbinder? = null

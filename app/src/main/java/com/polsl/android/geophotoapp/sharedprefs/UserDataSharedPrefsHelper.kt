@@ -4,9 +4,6 @@ import android.content.Context
 import com.google.gson.Gson
 import com.polsl.android.geophotoapp.model.UserData
 
-/**
- * Created by alachman on 21.04.2018.
- */
 class UserDataSharedPrefsHelper(private val context: Context) : BaseSharedPrefsHelper() {
 
     companion object {

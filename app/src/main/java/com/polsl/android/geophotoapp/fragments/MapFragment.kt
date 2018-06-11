@@ -17,7 +17,6 @@ import com.polsl.android.geophotoapp.Services.networking.PhotoLocationNetworking
 import com.polsl.android.geophotoapp.Services.networking.PhotoLocationNetworkingDelegate
 import com.polsl.android.geophotoapp.rest.restResponse.PhotoLocation
 
-
 class MapFragment : Fragment(), OnMapReadyCallback, PhotoLocationNetworkingDelegate {
 
     var gMap: GoogleMap? = null

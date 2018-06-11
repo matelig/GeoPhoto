@@ -3,9 +3,6 @@ package com.polsl.android.geophotoapp.model
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-/**
- * Created by alachman on 06.05.2018.
- */
 class PhotoFilter : Serializable {
     companion object {
         const val DATE_TYPE = "dateType"

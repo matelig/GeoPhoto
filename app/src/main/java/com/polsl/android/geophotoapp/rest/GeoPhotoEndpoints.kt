@@ -56,7 +56,6 @@ interface GeoPhotoEndpoints {
 
     companion object geoPhotoApi {
         const val URL = "http://195.181.223.56:8080/SIM/"
-        //const val URL = "http://192.168.0.105:8080/"
 
         fun create(): GeoPhotoEndpoints {
             val builder = OkHttpClient.Builder()

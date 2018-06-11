@@ -1,6 +1,5 @@
 package com.polsl.android.geophotoapp.fragments
 
-
 import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
@@ -21,7 +20,6 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.polsl.android.geophotoapp.R
 import com.polsl.android.geophotoapp.activity.TakenPhotoActivity
 import kotlinx.android.synthetic.main.fragment_make_photo.*
-
 
 class MakePhotoFragment : Fragment() {
 
