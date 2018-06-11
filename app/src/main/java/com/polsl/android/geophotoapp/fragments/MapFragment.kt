@@ -1,5 +1,6 @@
 package com.polsl.android.geophotoapp.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Base64
@@ -15,6 +16,7 @@ import com.polsl.android.geophotoapp.util.photoMarkerUtils.PhotoClusterRenderer
 import android.widget.Toast
 import com.polsl.android.geophotoapp.Services.networking.PhotoLocationNetworking
 import com.polsl.android.geophotoapp.Services.networking.PhotoLocationNetworkingDelegate
+import com.polsl.android.geophotoapp.activity.EditExifActivity
 import com.polsl.android.geophotoapp.rest.restResponse.PhotoLocation
 
 class MapFragment : Fragment(), OnMapReadyCallback, PhotoLocationNetworkingDelegate {
@@ -66,11 +68,17 @@ class MapFragment : Fragment(), OnMapReadyCallback, PhotoLocationNetworkingDeleg
 
         clusterManager?.setOnClusterItemClickListener(
                 {
-                    Toast.makeText(context, "Cluster item click", Toast.LENGTH_SHORT).show()
-
+                    //Toast.makeText(context, "Cluster item click", Toast.LENGTH_SHORT).show()
+                    showEditExifActivity(it.id.toLong())
                     false
                 })
         gMap?.setOnMarkerClickListener(clusterManager)
+    }
+
+    private fun showEditExifActivity(photoId: Long) {
+        val intent = Intent(this.context, EditExifActivity::class.java)
+        intent.putExtra("photoId", photoId)
+        startActivity(intent)
     }
 
     override fun onDestroyView() {
